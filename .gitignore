@@ -1,0 +1,26 @@
+nbproject
+.netbeans
+*#
+node_modules
+ssl
+.DS_STORE
+*~
+.idea
+
+# Ignore config file w/ sensitive or environment-specific information
+config/db.js
+dbconfig.js
+
+# Ignore dev minified/compiled assets
+public/stylesheets/_*.css
+public/js/_*.js
+
+# Ignore production minified/compiled assets
+public/_target/*.js
+public/_target/*.css
+
+# Ignore compiled LESS
+mast/templates/less-output.css
+
+# Ignore uploaded files
+public/files/*

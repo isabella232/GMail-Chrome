@@ -1,0 +1,15 @@
+{
+  "name": "LD Engine",
+  "description": "",
+  "version": "0.1",
+  "permissions": ["tabs","http://*/*"],
+
+  "content_scripts" : [
+  	{
+  		"matches"	: ["*://mail.google.com/*"],
+  		"css"		: ["gmail_sidebar.css"],
+  		"js"		: ["gmail_sidebar.js"]
+  	}
+  ],
+  "manifest_version" : 2
+}

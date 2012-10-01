@@ -1,0 +1,1 @@
+alert("! gmail_sidebar.js runs !");
