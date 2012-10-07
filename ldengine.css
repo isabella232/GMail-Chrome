@@ -1,8 +1,13 @@
 .lde-email-result {
-	padding-top: 10px;
-	padding-left: 8px;
+	padding: 10px 8px 0px 8px;
 	height: 125px;
 	color: #666;
+	cursor: pointer;
+	border-bottom: 1px solid #D8D8D8;
+}
+
+.lde-email-result:hover {
+	background-color: #f4f8e7
 }
 
 .lde-header {
@@ -25,3 +30,32 @@
 	padding-top: 5px;
 	word-break: break-all;
 }
+
+#lde-popup {
+	width: 470px;
+	height: 270px;
+	padding: 10px;
+	border: solid 1px #666;
+	position: absolute;
+	background:white;
+	z-index: 1001;
+	right:230px;
+}
+
+#lde-msg-mask {
+	background:#999;
+	width:100%;
+	height:100%;
+	opacity:.6;
+	position:absolute;
+	top:0px;
+	left:0px;
+	z-index:1000	
+}
+
+.lde-popup-arrow {
+	position: absolute;
+	right: -29px;
+	top: 40px;
+}
+

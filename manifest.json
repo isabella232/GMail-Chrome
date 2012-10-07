@@ -17,6 +17,8 @@
     }
   ],
   "web_accessible_resources": [
-    "sidebar.tmpl"
+    "sidebar.tmpl",
+    "popup.tmpl",
+    "getSnippets.json"
   ]
 }
