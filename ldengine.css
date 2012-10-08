@@ -34,13 +34,50 @@
 #lde-popup {
 	width: 470px;
 	height: 270px;
-	padding: 10px;
+	padding: 25px;
 	border: solid 1px #666;
+	color: #666;
 	position: absolute;
 	background:white;
 	z-index: 1001;
-	right:230px;
+	right:250px;
 }
+
+.lde-popup-subject {
+	font-size: 18px;
+	padding-bottom: 12px;
+	border-bottom: solid 1px #666;
+	margin-bottom: 10px;
+}
+
+.lde-popup-msg-header {
+	overflow: auto;
+	margin-bottom: 20px;
+}
+
+.lde-popup-sender-name {
+	font-size: 14px;
+	font-weight: bold;
+	float: left;
+	margin-right: 10px;
+}
+
+.lde-popup-sender-email {
+	font-size: 12px;
+	float: left;
+}
+
+.lde-popup-date {
+	font-size: 12px;
+	float: right;
+}
+
+.lde-popup-msg-text {
+	font-size: 12px;
+}
+
+
+
 
 #lde-msg-mask {
 	background:#999;
@@ -59,3 +96,17 @@
 	top: 40px;
 }
 
+.lde-popup-content {
+	display: none;
+}
+
+.lde-ajax-spinner {
+position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 32px;
+	height: 32px;
+	margin-top: -16px; /* Half the height */
+	margin-left: -16px; /* Half the width */	
+	background-image:url('chrome-extension://__MSG_@@extension_id__/ajax-loader.gif');
+}

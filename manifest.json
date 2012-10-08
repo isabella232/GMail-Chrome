@@ -16,9 +16,14 @@
       "css" : ["ldengine.css"]
     }
   ],
+  "permissions": [
+    "http://localhost/",
+    "storage"
+  ],
   "web_accessible_resources": [
     "sidebar.tmpl",
     "popup.tmpl",
-    "getSnippets.json"
-  ]
+    "ajax-loader.gif"
+  ],
+  "options_page": "options.html"
 }

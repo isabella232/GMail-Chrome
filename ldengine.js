@@ -1,5 +1,8 @@
+var API_URL = localStorage["ldengine_api_url"];
 $(function() {
+  console.log(API_URL); 
   var processMessageTimeout = null;
+  var activeMessage = null;
   // Start monitoring changes to browser history, since GMail is an Ajax app
   $(window).bind("popstate", function(event) {
     clearTimeout(processMessageTimeout);
@@ -9,15 +12,28 @@ $(function() {
     // so for now we'll just act on a delay.
     processMessageTimeout = setTimeout(processMessage,1000,event);
   });
+
+  // Create a deferred object to wrap around a call to Chrome's 
+  // local storage API.  This lets us chain our request for
+  // settings with our other startup requests
+  function getSettings() {
+    var getApiURLDeferredObj = $.Deferred();
+    chrome.storage.local.get('ldengine_api_url',function(items){
+      API_URL = items.ldengine_api_url || "localhost:3001";
+      getApiURLDeferredObj.resolve();
+    });
+    return getApiURLDeferredObj.promise();    
+  }
   
   function processMessage(event) {
     var relatedEmails;
     // No sidebar?  Then we're not in a message.
-    if ($('.y3').length == 0) {
+    if ($('.y3').length === 0) {
       return;
     }
-    // Load all of the html templates
+    // Load the settings and all of the html templates
     $.when(
+      getSettings(),
       $.get(chrome.extension.getURL("sidebar.tmpl"), function(data){$.templates('sidebarTemplate',data);}, 'html'),
       $.get(chrome.extension.getURL("popup.tmpl"), function(data){$.templates('popupTemplate',data);}, 'html')
     )
@@ -30,11 +46,25 @@ $(function() {
       placeBlock(block);
       // Get the text of the current email
       var text = $('.adP').text();
-      // Get related emails from the server
-      $.get(chrome.extension.getURL("getSnippets.json"),function(data){
-        relatedEmails = data;
+      // Get the addresses of people this email was sent to
+      var toAddresses = [];
+      $('.hb').last().find('[email]').each(function(){toAddresses.push($(this).attr('email'));});
+      // Create the message to post to the server asking for related snippets
+      var postData = {
+        subject: $('.hP').text(),
+        body: $('.adP').last().text().replace(/\n/g,' '),
+        from: $('.h7').last().find('.gD').attr('email'),
+        to: toAddresses,
+        cc: [],
+        bcc: []
+      };
+      // Post the message to the server and get related snippets
+      console.log(JSON.stringify(postData));
+      $.post("http://"+API_URL+"/message/relatedSnippets",{Message:JSON.stringify(postData)},function(data){
+        console.log(data);
+        relatedEmails = data.relatedEmails;
         // Link the data from the server to the JsView template
-        $.link.sidebarTemplate( ".ldengine", data );
+        $.link.sidebarTemplate( ".ldengine", relatedEmails );
         // Ellipsize the related email snippets
         $('.lde-email-result').dotdotdot();
         // Hook up ze clicks
@@ -47,27 +77,90 @@ $(function() {
 });
 
 function onClickRelatedEmail() {
+  activeMessage = $(this);
+  popup($(this));
+}
+
+function popup(el) {
   removePopup();
-  // Get the data about the related email
-  var data = $(this).data('data');
+  if (el === false) {
+    return;
+  }
   // Mask the message area
   maskMessageArea();
   // Popup the popup
-  $('.ldengine').append($('<div id="lde-popup"></div>'));
-  $.link.popupTemplate($('#lde-popup'),data);
-  $('#lde-popup').css('top',$(this).position().top+'px');
+  $('.adC').parent().append($('<div id="lde-popup"></div>'));
+  $.link.popupTemplate($('#lde-popup'),{});
+  // Hookup the click to remove popup
   $('#lde-popup').click(removePopup);
+  // Bind the scroll event of the sidebar so that the popup can track with the
+  // message snippet it's attached to
+  $('.u5').bind('scroll',scrollPopup);
+  // Call the scroll callback to position the popup
+  scrollPopup();
+  // Get the related message data to fill the popup
+  $.get('http://'+API_URL+'/message/'+el.data('data').id,onReceivedRelatedMessageDetails);
+}
+
+function onReceivedRelatedMessageDetails(data) {
+  data.body = data.body.replace(/\\n/g,"<br/>");
+  $.link.popupTemplate($('#lde-popup'),data);
+  $('.lde-ajax-spinner').hide();
+  $('.lde-popup-content').show();
+  // Call the scroll callback to position the popup
+  scrollPopup();  
 }
 
 function removePopup() {
+  $('.u5').unbind('scroll',scrollPopup);
   $('#lde-popup').detach();
   maskMessageArea(false);
+}
+
+function scrollPopup() {
+  // Reset the arrow state
+  $('.lde-popup-arrow').show();
+  $('.lde-popup-arrow').css('top','40px');
+
+  // Get the current position of the active message snippet
+  var activeMessageTop = activeMessage.position().top;
+  var popupTop;
+
+  if (activeMessageTop < 0) {
+    // If the top of the message snippet is out of view, then peg the
+    // popup to the top of the message view
+    popupTop = 0;
+    // If the message snippit is completely out of view, then hide the arrow
+    if (activeMessageTop < 0 - (activeMessage.height() - 40)) {
+      $('.lde-popup-arrow').hide();
+    }
+  }
+  else if (activeMessageTop + $('#lde-popup').height() > $('.u5').height()) {
+    // If the message snippet is low enough that the popup would start to be
+    // pushed off-screen, then peg the popup to the bottom of the message view
+    popupTop = ($('.u5').height() - $('#lde-popup').height());
+    // Move the arrow so that it's consistently pointing at the message snippet
+    $('.lde-popup-arrow').css('top',40-($('.u5').height() - (activeMessageTop + $('#lde-popup').height()))+'px');
+    // If the message snippet is out of view, hide the arrow
+    if (activeMessageTop > ($('.u5').height()-40)) {
+      $('.lde-popup-arrow').hide();
+    }
+  }
+  // If the message is clearly in view, just move the popup along with it
+  else {
+    popupTop = activeMessage.position().top;
+  }
+  // Account for the fact that the message snippet bar may not be at the top of the
+  // sidebar (because there might be contact details or something else on top of it)
+  popupTop += $('.u5').position().top;
+  $('#lde-popup').css('top',popupTop+'px');
 }
 
 function placeBlock(block) {
   // If there's an ad bar, replace it with our stuff
   if ($('.u5').length > 0) {
-    $('.u5').replaceWith(block);
+    $('.u5').empty();
+    $('.u5').append(block);
   }
   // Otherwise, if the sidebar has contact info at the top, insert our content after it
   else if ($('.anT').length > 0) {
@@ -82,12 +175,11 @@ function placeBlock(block) {
 function maskMessageArea(mask) {
   $('#lde-msg-mask').detach();
   // If we just want to remove the mask, we're done
-  if (mask == false) {
+  if (mask === false) {
     return;
   }
   // Otherwise, create a mask and place it over the message area
   else {
-    //var maskEl = $('<svg id="lde-msg-mask" xmlns="http://www.w3.org/2000/svg" version="1.1" style="z-index:1000; position:absolute; top: 0px; left: 0px; width:100%; height: 100%"><rect x="0" y="0" width="100%" height="100%" style="fill:black;fill-opacity:0.25;" / ></svg>');
     var maskEl = $('<div id="lde-msg-mask"></div>').click(removePopup);
     $('.Bu').first().css('position','relative').append(maskEl);
   }
