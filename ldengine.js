@@ -1,6 +1,5 @@
-var API_URL = localStorage["ldengine_api_url"];
+var API_URL;
 $(function() {
-  console.log(API_URL); 
   var processMessageTimeout = null;
   var activeMessage = null;
   // Start monitoring changes to browser history, since GMail is an Ajax app
@@ -13,7 +12,7 @@ $(function() {
     processMessageTimeout = setTimeout(processMessage,1000,event);
   });
 
-  // Create a deferred object to wrap around a call to Chrome's 
+  // Create a deferred object to wrap around a call to Chrome's
   // local storage API.  This lets us chain our request for
   // settings with our other startup requests
   function getSettings() {
@@ -22,7 +21,7 @@ $(function() {
       API_URL = items.ldengine_api_url || "localhost:3001";
       getApiURLDeferredObj.resolve();
     });
-    return getApiURLDeferredObj.promise();    
+    return getApiURLDeferredObj.promise();
   }
   
   function processMessage(event) {
@@ -59,9 +58,7 @@ $(function() {
         bcc: []
       };
       // Post the message to the server and get related snippets
-      console.log(JSON.stringify(postData));
       $.post("http://"+API_URL+"/message/relatedSnippets",{Message:JSON.stringify(postData)},function(data){
-        console.log(data);
         relatedEmails = data;
         // Format some stuff up in the data
         for (var i = 0; i < relatedEmails.length; i++) {
@@ -103,7 +100,7 @@ function popup(el) {
   // Call the scroll callback to position the popup
   scrollPopup();
   // Get the related message data to fill the popup
-  $.get('http://'+API_URL+'/message/'+el.data('data').id,onReceivedRelatedMessageDetails);
+  $.get('http://'+API_URL+'/message',{id:el.data('data').id},onReceivedRelatedMessageDetails);
   // Hook up the close button
   $('.lde-popup-close-button').click(removePopup);
 }
