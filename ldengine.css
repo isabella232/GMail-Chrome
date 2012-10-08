@@ -74,6 +74,8 @@
 
 .lde-popup-msg-text {
 	font-size: 12px;
+	height: 200px;
+	overflow: auto;
 }
 
 
