@@ -112,3 +112,13 @@ position: absolute;
 	margin-left: -16px; /* Half the width */	
 	background-image:url('chrome-extension://__MSG_@@extension_id__/ajax-loader.gif');
 }
+
+.lde-popup-close-button {
+	width: 20px;
+	height: 20px;
+	background-image:url('chrome-extension://__MSG_@@extension_id__/close_message.gif');	
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	cursor: pointer;
+}

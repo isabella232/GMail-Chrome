@@ -62,7 +62,13 @@ $(function() {
       console.log(JSON.stringify(postData));
       $.post("http://"+API_URL+"/message/relatedSnippets",{Message:JSON.stringify(postData)},function(data){
         console.log(data);
-        relatedEmails = data.relatedEmails;
+        relatedEmails = data;
+        // Format some stuff up in the data
+        for (var i = 0; i < relatedEmails.length; i++) {
+          var relatedEmail = relatedEmails[i];
+          relatedEmail.date = Date.parse(relatedEmail.date.replace(/\.\d+Z$/,'')).toString('MMM d');
+          relatedEmails[i] = relatedEmail;
+        }
         // Link the data from the server to the JsView template
         $.link.sidebarTemplate( ".ldengine", relatedEmails );
         // Ellipsize the related email snippets
@@ -91,8 +97,6 @@ function popup(el) {
   // Popup the popup
   $('.adC').parent().append($('<div id="lde-popup"></div>'));
   $.link.popupTemplate($('#lde-popup'),{});
-  // Hookup the click to remove popup
-  $('#lde-popup').click(removePopup);
   // Bind the scroll event of the sidebar so that the popup can track with the
   // message snippet it's attached to
   $('.u5').bind('scroll',scrollPopup);
@@ -100,6 +104,8 @@ function popup(el) {
   scrollPopup();
   // Get the related message data to fill the popup
   $.get('http://'+API_URL+'/message/'+el.data('data').id,onReceivedRelatedMessageDetails);
+  // Hook up the close button
+  $('.lde-popup-close-button').click(removePopup);
 }
 
 function onReceivedRelatedMessageDetails(data) {
@@ -108,7 +114,9 @@ function onReceivedRelatedMessageDetails(data) {
   $('.lde-ajax-spinner').hide();
   $('.lde-popup-content').show();
   // Call the scroll callback to position the popup
-  scrollPopup();  
+  scrollPopup();
+  // Hook up the close button
+  $('.lde-popup-close-button').click(removePopup);
 }
 
 function removePopup() {
