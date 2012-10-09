@@ -1,8 +1,9 @@
 var API_URL;
 var accountStatus;
+var activeMessage = null;
+
 $(function() {
   var processMessageTimeout = null;
-  var activeMessage = null;
 
   processMessageTimeout = setInterval(processMessage,100);
   // Start monitoring changes to browser history, since GMail is an Ajax app
@@ -106,12 +107,15 @@ function showLoginWindow(url) {
 }
 
 function onClickRelatedEmail() {
+  if (activeMessage) {
+    activeMessage.removeClass('active-snippet');
+  };
   activeMessage = $(this);
-  popup($(this));
+  activeMessage.addClass('active-snippet');
+  popup(activeMessage);
 }
 
 function popup(el) {
-  removePopup();
   if (el === false) {
     return;
   }
@@ -173,6 +177,7 @@ function onReceivedRelatedMessageDetails(data) {
 function removePopup() {
   $('#ldengine').unbind('scroll',scrollPopup);
   $('#lde-popup').detach();
+  activeMessage.removeClass('active-snippet');
   maskMessageArea(false);
 }
 
@@ -220,6 +225,7 @@ function scrollPopup() {
 }
 
 function placeBlock(block) {
+  $('.adC').css('right','').css('marginRight','0px').css('width','236px');
   // If there's an ad bar, replace it with our stuff
   if ($('.u5').length > 0) {
     console.log("replacing ads");

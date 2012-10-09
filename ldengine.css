@@ -6,9 +6,15 @@
 	border-bottom: 1px solid #D8D8D8;
 }
 
+.active-snippet {
+	background-color: #f4f8e7;
+}
+
+/*
 .lde-email-result:hover {
 	background-color: #f4f8e7
 }
+*/
 
 .lde-header {
 	overflow: auto;	
@@ -51,8 +57,8 @@
 }
 
 .lde-popup-msg-header {
-	overflow: auto;
-	margin-bottom: 20px;
+	overflow: visible;
+	margin-bottom: 45px;
 }
 
 .lde-popup-sender-name {
@@ -76,6 +82,7 @@
 	font-size: 12px;
 	height: 200px;
 	overflow: auto;
+	clear: both;
 }
 
 #ldengine {
@@ -130,7 +137,19 @@ position: absolute;
 	cursor: pointer;
 }
 
-.u5 {
+.lde-popup-sender-thumbnail img {
+	width: 25px;
+	height: 25px;
+	float:left;
+	margin-right: 5px;
+	margin-top: -5px;
+}
+
+.Bu {
+	position: relative;
+}
+
+.u5, .yM {
 	display:none;
 }
 
@@ -140,4 +159,9 @@ position: absolute;
 
 .y3 {
 	width: 250px;
+}
+
+.adC {
+	margin-left: 0px;
+	width: 236px;
 }
