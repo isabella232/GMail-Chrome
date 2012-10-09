@@ -19,6 +19,7 @@
   "permissions": [
     "http://localhost/",
     "http://198.101.252.118:3000/",
+    "http://198.101.252.118:3001/",
     "storage"
   ],
   "web_accessible_resources": [

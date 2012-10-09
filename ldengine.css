@@ -78,8 +78,15 @@
 	overflow: auto;
 }
 
-
-
+#ldengine {
+	background: inherit;
+	padding-top: 10px;
+	padding-left: 8px;
+	position: relative;
+	overflow: hidden;
+	margin-top: 0;
+	padding-top: 10px;
+}
 
 #lde-msg-mask {
 	background:#999;
@@ -121,4 +128,16 @@ position: absolute;
 	top: 5px;
 	right: 5px;
 	cursor: pointer;
+}
+
+.u5 {
+	display:none;
+}
+
+.lde-keyword {
+	background-color: yellow;
+}
+
+.y3 {
+	width: 250px;
 }
