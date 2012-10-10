@@ -64,9 +64,9 @@
 }
 
 .lde-popup-subject {
-	font-size: 18px;
+	font-size: 20px;
 	padding-bottom: 12px;
-	border-bottom: solid 1px #666;
+	border-bottom: solid 1px #999;
 	margin-bottom: 10px;
 }
 
@@ -149,10 +149,10 @@ position: absolute;
 .lde-popup-close-button {
 	width: 20px;
 	height: 20px;
-	background-image:url('chrome-extension://__MSG_@@extension_id__/close_message.gif');	
+	background-image:url('chrome-extension://__MSG_@@extension_id__/icon_close@2x.png');	
 	position: absolute;
-	top: 5px;
-	right: 5px;
+	top: 0px;
+	right: 0px;
 	cursor: pointer;
 }
 
@@ -207,6 +207,7 @@ position: absolute;
 }
 
 .lde-progress-value {
+	font-size: 80%;
     float: right;
     width: 17%;
     text-align: center;
