@@ -20,17 +20,26 @@
 	overflow: auto;	
 }
 
+/**
+ * Name of the sender of the email.
+ */
 .lde-sender {
 	float: left;
 	font-size: 100%;
 	font-weight: bold;
 }
 
+/**
+ * Date the email was sent.
+ */
 .lde-date {
 	font-size: 90%;
 	float:right;
 }
 
+/**
+ * Text contained within the email body.
+ */
 .lde-text {
 	font-size: 85%;
 	padding-top: 5px;
@@ -85,6 +94,10 @@
 	clear: both;
 }
 
+/**
+ *  Container containing individual snippet containing the sidebar UI,
+ *  namely the list of email snippets.
+ */
 #ldengine {
 	background: inherit;
 	padding-top: 10px;
