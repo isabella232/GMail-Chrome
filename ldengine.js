@@ -256,7 +256,7 @@ function scrollPopup() {
   $('.lde-popup-arrow').css('top','40px');
 
   // Get the current position of the active message snippet
-  var activeMessageTop = activeMessage.position().top;
+  var activeMessageTop = activeMessage.offset().top - $('.u5').offset().top;
   var popupTop;
 
   if (activeMessageTop < 0) {
@@ -281,7 +281,7 @@ function scrollPopup() {
   }
   // If the message is clearly in view, just move the popup along with it
   else {
-    popupTop = activeMessage.position().top;
+    popupTop = activeMessageTop;
   }
   // Account for the fact that the message snippet bar may not be at the top of the
   // sidebar (because there might be contact details or something else on top of it)
