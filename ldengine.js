@@ -1,17 +1,8 @@
 var API_URL;
+var activeMessage = null;
 $(function() {
   var processMessageTimeout = null;
-  var activeMessage = null;
-  // Start monitoring changes to browser history, since GMail is an Ajax app
-  $(window).bind("popstate", function(event) {
-    clearTimeout(processMessageTimeout);
-    // After the history changes, we need to wait for new content to load before we manipulate
-    // the DOM, because the elements we want to manipulate may not immediately be available.
-    // But, it looks like GMail turns off jQuery's global Ajax events (http://api.jquery.com/category/ajax/global-ajax-event-handlers/)
-    // so for now we'll just act on a delay.
-    processMessageTimeout = setTimeout(processMessage,1000,event);
-  });
-
+  
   // Create a deferred object to wrap around a call to Chrome's
   // local storage API.  This lets us chain our request for
   // settings with our other startup requests
@@ -23,6 +14,27 @@ $(function() {
     });
     return getApiURLDeferredObj.promise();
   }
+
+  // Load the settings and all of the html templates
+  $.when(
+    getSettings()
+  ).then(function(){
+      $.when(
+        $.get(chrome.extension.getURL("sidebar.tmpl"), function(data){$.templates('sidebarTemplate',data);}, 'html'),
+        $.get(chrome.extension.getURL("popup.tmpl"), function(data){$.templates('popupTemplate',data);}, 'html')
+      ).then(function(){
+          // Start monitoring changes to browser history, since GMail is an Ajax app
+          $(window).bind("popstate", function(event) {
+            clearTimeout(processMessageTimeout);
+            // After the history changes, we need to wait for new content to load before we manipulate
+            // the DOM, because the elements we want to manipulate may not immediately be available.
+            // But, it looks like GMail turns off jQuery's global Ajax events (http://api.jquery.com/category/ajax/global-ajax-event-handlers/)
+            // so for now we'll just act on a delay.
+            processMessageTimeout = setTimeout(processMessage,1000,event);
+          });
+          processMessageTimeout = setTimeout(processMessage,1000,event);
+        })
+    });
   
   function processMessage(event) {
     var relatedEmails;
@@ -30,78 +42,72 @@ $(function() {
     if ($('.y3').length === 0) {
       return;
     }
-    // Load the settings and all of the html templates
-    $.when(
-      getSettings(),
-      $.get(chrome.extension.getURL("sidebar.tmpl"), function(data){$.templates('sidebarTemplate',data);}, 'html'),
-      $.get(chrome.extension.getURL("popup.tmpl"), function(data){$.templates('popupTemplate',data);}, 'html')
-    )
-    // Continue when loading is completed
-    .then(function() {
-      $('.ldengine').detach();
-      // Create the container
-      var block = $('<div class="ldengine"></div>');
-      // Place it on the page
-      placeBlock(block);
-      // Get the text of the current email
-      var text = $('.adP').text();
-      // Get the addresses of people this email was sent to
-      var toAddresses = [];
-      $('.hb').last().find('[email]').each(function(){toAddresses.push($(this).attr('email'));});
-      // Create the message to post to the server asking for related snippets
-      var postData = {
-        Message: {
-          subject: $('.hP').text(),
-          body: $('.adP').last().text().replace(/\n/g,' '),
-          from: $('.h7').last().find('.gD').attr('email'),
-          to: toAddresses,
-          cc: [],
-          bcc: []
-        }
-      };
+    $('.ldengine').detach();
+    // Create the container
+    var block = $('<div class="ldengine"></div>');
+    // Place it on the page
+    placeBlock(block);
+    // Get the text of the current email
+    var text = $('.adP').text();
+    // Get the addresses of people this email was sent to
+    var toAddresses = [];
+    $('.hb').last().find('[email]').each(function(){toAddresses.push($(this).attr('email'));});
+    // Create the message to post to the server asking for related snippets
+    var postData = {
+      Message: {
+        subject: $('.hP').text(),
+        body: $('.adP').last().text().replace(/\n/g,' '),
+        from: $('.h7').last().find('.gD').attr('email'),
+        to: toAddresses,
+        cc: [],
+        bcc: []
+      }
+    };
       // Post the message to the server and get related snippets
-              $.ajax(
-          "http://"+API_URL+"/message/relatedSnippets",
-          {
-            type:'POST',
-            data:postData,
-            success: function(data){
-              relatedEmails = data;
-              // Format some stuff up in the data
-              for (var i = 0; i < relatedEmails.length; i++) {
-                var relatedEmail = relatedEmails[i];
-                relatedEmail.date = Date.parse(relatedEmail.date.replace(/\.\d+Z$/,'')).toString('MMM d');
-                relatedEmails[i] = relatedEmail;
-              }
-              // Link the data from the server to the JsView template
-              // var percentIndexed = accountStatus.percentIndexed || 83;
-              // $('.lde-progress-bar').html('');
-              // $.link.progressbarTemplate('.lde-progress-bar'); 
-              // $('.lde-progress-status').css({width: percentIndexed + '%'});
-              // $('.lde-progress-value').html(percentIndexed + '%');
-              $.link.sidebarTemplate( ".ldengine", relatedEmails );
-              console.log(relatedEmails);
-              // Ellipsize the related email snippets
-              $('.lde-email-result').dotdotdot();
-              // Hook up ze clicks
-              for (var i = 0; i < relatedEmails.length; i++) {
-                $($('.lde-email-result')[i]).data('data',relatedEmails[i]).click(onClickRelatedEmail);
-              }
-            },
-          dataType: 'json'
-        });
-
+    $.ajax(
+      "http://"+API_URL+"/message/relatedSnippets",
+      {
+        type:'POST',
+        data:postData,
+        success: function(data){
+          relatedEmails = data;
+          // Format some stuff up in the data
+          for (var i = 0; i < relatedEmails.length; i++) {
+            var relatedEmail = relatedEmails[i];
+            relatedEmail.date = Date.parse(relatedEmail.date.replace(/\.\d+Z$/,'')).toString('MMM d');
+            relatedEmails[i] = relatedEmail;
+          }
+          // Link the data from the server to the JsView template
+          // var percentIndexed = accountStatus.percentIndexed || 83;
+          // $('.lde-progress-bar').html('');
+          // $.link.progressbarTemplate('.lde-progress-bar'); 
+          // $('.lde-progress-status').css({width: percentIndexed + '%'});
+          // $('.lde-progress-value').html(percentIndexed + '%');
+          $.link.sidebarTemplate( ".ldengine", relatedEmails );
+          console.log(relatedEmails);
+          // Ellipsize the related email snippets
+          $('.lde-email-result').dotdotdot();
+          // Hook up ze clicks
+          for (var i = 0; i < relatedEmails.length; i++) {
+            $($('.lde-email-result')[i]).data('data',relatedEmails[i]).click(onClickRelatedEmail);
+          }
+        },
+      dataType: 'json'
     });
   }
 });
 
 function onClickRelatedEmail() {
+  removePopup();
+  if (activeMessage) {
+    activeMessage.removeClass('active-snippet');
+  };
   activeMessage = $(this);
-  popup($(this));
+  activeMessage.addClass('active-snippet');
+  popup(activeMessage);
 }
 
 function popup(el) {
-  removePopup();
   if (el === false) {
     return;
   }
@@ -122,7 +128,35 @@ function popup(el) {
 }
 
 function onReceivedRelatedMessageDetails(data) {
-  data.body = data.body.replace(/\\n/g,"<br/>");
+  // First, highlight the keywords.
+  // We'll extract them all first, so that
+  // the indexes don't get messed up when
+  // we replace the keyword with its highlighted
+  // equivalent.  In order to do that, we'll need
+  // to get them in order.
+  var keywordIndexes = [];
+  var keywords = {};
+  for (var i = 0; i < data.keywords.length; i++) {
+    keyword = data.keywords[i];
+    keywordIndexes.push(keyword.offset);
+    keywords[keyword.offset] = keyword;
+  }
+  keywordIndexes.sort();
+  var bodyParts = [];
+  var currentIndex = 0;
+  for (var i = 0; i < keywordIndexes.length; i++) {
+    var keywordIndex = keywordIndexes[i];
+    var keyword = keywords[keywordIndex];
+    bodyParts.push(data.body.substr(currentIndex,(keywordIndex - currentIndex)));
+    bodyParts.push('<span class="lde-keyword">'+data.body.substr(keywordIndex,keyword.keyword.length) + '</span>');
+    currentIndex = keywordIndex + keyword.keyword.length;
+  }
+  if (currentIndex < data.body.length) {
+    bodyParts.push(data.body.substr(currentIndex));
+  }
+  var body = bodyParts.join('').replace(/\n/g,"<br/>");
+  data.body = body;
+  data.date = Date.parse(data.date.replace(/\.\d+Z$/,'')).toString('MMM d');
   $.link.popupTemplate($('#lde-popup'),data);
   $('.lde-ajax-spinner').hide();
   $('.lde-popup-content').show();
@@ -133,6 +167,9 @@ function onReceivedRelatedMessageDetails(data) {
 }
 
 function removePopup() {
+  if (activeMessage) {
+    activeMessage.removeClass('active-snippet');
+  }
   $('.u5').unbind('scroll',scrollPopup);
   $('#lde-popup').detach();
   maskMessageArea(false);
@@ -178,6 +215,7 @@ function scrollPopup() {
 }
 
 function placeBlock(block) {
+  $('.adC').css('right','20px').css('marginRight','0px').css('width','236px');
   // If there's an ad bar, replace it with our stuff
   if ($('.u5').length > 0) {
     $('.u5').empty();
