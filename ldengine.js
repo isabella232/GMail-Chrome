@@ -16,7 +16,10 @@ $(function() {
   function getSettings() {
     var getApiURLDeferredObj = $.Deferred();
     chrome.storage.local.get('ldengine_api_url',function(items){
-      API_URL = items.ldengine_api_url || "localhost:3001";
+      // For now, to avoid any weird issues w/ people who already installed 
+      // the existing version, hard-code the production host
+      // API_URL = "apps.ldengine.com";
+      API_URL = items.ldengine_api_url || "apps.ldengine.com";
       getApiURLDeferredObj.resolve();
     });
     return getApiURLDeferredObj.promise();
