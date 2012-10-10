@@ -5,6 +5,7 @@ $(function() {
   var checkForSidebarTimer = null;
   var checkForAdsTimer = null;
   var checkMessageLoadedTimer = null;
+  var checkSidebarRetry;
   
   // Create a deferred object to wrap around a call to Chrome's
   // local storage API.  This lets us chain our request for
@@ -18,7 +19,9 @@ $(function() {
     return getApiURLDeferredObj.promise();
   }
 
-  // Load the settings and all of the html templates
+  // Load the settings and all of the html templates.  NOTE: the sidebar.tmpl is named so for legacy reasons,
+  // but it doesn't represent the whole sidebar; it's just the template for a related email snippet.  The
+  // sidebar template is ldengine.tmpl.
   $.when(
     getSettings()
   ).then(function(){
@@ -28,26 +31,33 @@ $(function() {
         $.get(chrome.extension.getURL("popup.tmpl"), function(data){$.templates('popupTemplate',data);}, 'html'),
         $.get(chrome.extension.getURL("progressbar.tmpl"), function(data){$.templates('progressbarTemplate',data);}, 'html')
       ).then(function(){
-          console.log("INIT");
           // Start monitoring changes to browser history, since GMail is an Ajax app
           $(window).bind("popstate", function(event) {
-            console.log("POP");
             // After the history changes, we need to wait for new content to load before we manipulate
             // the DOM, because the elements we want to manipulate may not immediately be available.
             // But, it looks like GMail turns off jQuery's global Ajax events (http://api.jquery.com/category/ajax/global-ajax-event-handlers/)
             // so for now we'll just act on a delay.
             if (checkForSidebarTimer == null) {
+              checkSidebarRetry = 10;
               checkForSidebarTimer = setTimeout(checkForSidebar,1000);
             }
           });
         });
+        // Check for the sidebar when we first load the page, in case popstate doesn't fire
+        checkSidebarRetry = 10;
         checkForSidebarTimer = setTimeout(checkForSidebar,1000);
     });
 
   function checkForSidebar() {
+    // If there's no sidebar, keep checking
     if ($('.y3').length === 0) {
-      console.log('no sidebar...');
-      checkForSidebarTimer = setTimeout(checkForSidebar,1000);
+      console.log("No sidebar...");
+      checkSidebarRetry--;
+      if (checkSidebarRetry > 0) {
+        checkForSidebarTimer = setTimeout(checkForSidebar,1000);
+      } else {
+        checkForSidebarTimer = null;
+      }
       return;
     } else {
       clearTimeout(checkForSidebarTimer);
@@ -57,8 +67,7 @@ $(function() {
   }
 
   function checkForAds() {
-    if ($('.oM').length > 0) {
-      console.log($('.oM'));
+    if ($('#ldengine').length === 0) {
       clearTimeout(checkForAdsTimer);
       checkForAdsTimer = null;
       processMessage();
@@ -94,11 +103,13 @@ $(function() {
       var block = $('<div id="ldengine"></div>');
       // Place it on the page
       placeBlock(block);
+      // No data; just a cheap way to render the html template
       $.link.ldengineTemplate('#ldengine');
 
       // Place the progress bar
       var percentIndexed = accountStatus.percentIndexed || 83;
       $('.lde-progress-bar').html('');
+      // No data; just a cheap way to render the html template
       $.link.progressbarTemplate('.lde-progress-bar');
       $('.lde-progress-status').css({width: percentIndexed + '%'});
       $('.lde-progress-value').html(percentIndexed + '%');
@@ -135,14 +146,7 @@ $(function() {
               relatedEmail.date = Date.parse(relatedEmail.date.replace(/\.\d+Z$/,'')).toString('MMM d');
               relatedEmails[i] = relatedEmail;
             }
-
-            // Link the data from the server to the JsView template
-            // var percentIndexed = accountStatus.percentIndexed || 83;
-            // $('.lde-progress-bar').html('');
-            // $.link.progressbarTemplate('.lde-progress-bar'); 
-            // $('.lde-progress-status').css({width: percentIndexed + '%'});
-            // $('.lde-progress-value').html(percentIndexed + '%');
-
+            // Add the related emails to the sidebar
             $.link.sidebarTemplate( ".lde-related-emails", relatedEmails );
             // Ellipsize the related email snippets
             $('.lde-email-result').dotdotdot();
@@ -153,6 +157,8 @@ $(function() {
             
             $('.kv,.hn,.h7').unbind('click',clickMessageThread);
             $('.kv,.hn,.h7').bind('click',clickMessageThread);
+
+            $('.u5').css('overflow','auto');
 
             if (checkForAdsTimer === null) {
               checkForAdsTimer = setInterval(checkForAds,500);
@@ -190,7 +196,9 @@ function popup(el) {
   maskMessageArea();
   // Popup the popup
   $('.adC').parent().append($('<div id="lde-popup"></div>'));
-  $.link.popupTemplate($('#lde-popup'),{});
+  // Since we have vars in the template of the form "from.xyz", the rendering engine will complain
+  // if there isn't a "from" object in the data.  So we'll make a blank one and pass it in.
+  $.link.popupTemplate($('#lde-popup'),{from:{}});
   // Bind the scroll event of the sidebar so that the popup can track with the
   // message snippet it's attached to
   $('.u5').bind('scroll',scrollPopup);
@@ -232,6 +240,7 @@ function onReceivedRelatedMessageDetails(data) {
   var body = bodyParts.join('').replace(/\n/g,"<br/>");
   data.body = body;
   data.date = Date.parse(data.date.replace(/\.\d+Z$/,'')).toString('MMM d');
+  // Load the data into the popup
   $.link.popupTemplate($('#lde-popup'),data);
   $('.lde-ajax-spinner').hide();
   $('.lde-popup-content').show();
