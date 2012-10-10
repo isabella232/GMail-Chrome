@@ -1,7 +1,7 @@
 {
   "name": "LD Engine",
-  "version": "0.1",
-  "description": "Pulls keywords out of GMail messages and adds related messages to sidebar.",
+  "version": "0.2",
+  "description": "Imagine a world where you didn't hate your email.",
   "permissions": [
   ],
   "manifest_version": 2,
