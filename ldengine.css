@@ -16,6 +16,10 @@
 }
 */
 
+/**
+ * Header containing the sender and the date of the email in
+ * email result.
+ */
 .lde-header {
 	overflow: auto;	
 }
