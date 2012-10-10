@@ -148,9 +148,9 @@ position: absolute;
 }
 
 .lde-popup-close-button {
-	width: 20px;
+	width: 23px;
 	height: 20px;
-	background-image:url('chrome-extension://__MSG_@@extension_id__/icon_close.png');	
+	background-image:url('chrome-extension://__MSG_@@extension_id__/icon_close.gif');	
 	position: absolute;
 	top: 0px;
 	right: 0px;
