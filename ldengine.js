@@ -50,31 +50,47 @@ $(function() {
       $('.hb').last().find('[email]').each(function(){toAddresses.push($(this).attr('email'));});
       // Create the message to post to the server asking for related snippets
       var postData = {
-        subject: $('.hP').text(),
-        body: $('.adP').last().text().replace(/\n/g,' '),
-        from: $('.h7').last().find('.gD').attr('email'),
-        to: toAddresses,
-        cc: [],
-        bcc: []
+        Message: {
+          subject: $('.hP').text(),
+          body: $('.adP').last().text().replace(/\n/g,' '),
+          from: $('.h7').last().find('.gD').attr('email'),
+          to: toAddresses,
+          cc: [],
+          bcc: []
+        }
       };
       // Post the message to the server and get related snippets
-      $.post("http://"+API_URL+"/message/relatedSnippets",{Message:JSON.stringify(postData)},function(data){
-        relatedEmails = data;
-        // Format some stuff up in the data
-        for (var i = 0; i < relatedEmails.length; i++) {
-          var relatedEmail = relatedEmails[i];
-          relatedEmail.date = Date.parse(relatedEmail.date.replace(/\.\d+Z$/,'')).toString('MMM d');
-          relatedEmails[i] = relatedEmail;
-        }
-        // Link the data from the server to the JsView template
-        $.link.sidebarTemplate( ".ldengine", relatedEmails );
-        // Ellipsize the related email snippets
-        $('.lde-email-result').dotdotdot();
-        // Hook up ze clicks
-        for (var i = 0; i < relatedEmails.length; i++) {
-          $($('.lde-email-result')[i]).data('data',relatedEmails[i]).click(onClickRelatedEmail);
-        }
-      },'json');
+              $.ajax(
+          "http://"+API_URL+"/message/relatedSnippets",
+          {
+            type:'POST',
+            data:postData,
+            success: function(data){
+              relatedEmails = data;
+              // Format some stuff up in the data
+              for (var i = 0; i < relatedEmails.length; i++) {
+                var relatedEmail = relatedEmails[i];
+                relatedEmail.date = Date.parse(relatedEmail.date.replace(/\.\d+Z$/,'')).toString('MMM d');
+                relatedEmails[i] = relatedEmail;
+              }
+              // Link the data from the server to the JsView template
+              // var percentIndexed = accountStatus.percentIndexed || 83;
+              // $('.lde-progress-bar').html('');
+              // $.link.progressbarTemplate('.lde-progress-bar'); 
+              // $('.lde-progress-status').css({width: percentIndexed + '%'});
+              // $('.lde-progress-value').html(percentIndexed + '%');
+              $.link.sidebarTemplate( ".ldengine", relatedEmails );
+              console.log(relatedEmails);
+              // Ellipsize the related email snippets
+              $('.lde-email-result').dotdotdot();
+              // Hook up ze clicks
+              for (var i = 0; i < relatedEmails.length; i++) {
+                $($('.lde-email-result')[i]).data('data',relatedEmails[i]).click(onClickRelatedEmail);
+              }
+            },
+          dataType: 'json'
+        });
+
     });
   }
 });
