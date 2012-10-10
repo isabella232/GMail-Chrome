@@ -46,7 +46,7 @@
 	position: absolute;
 	background:white;
 	z-index: 1001;
-	right:250px;
+	right:260px;
 }
 
 .lde-popup-subject {
@@ -145,3 +145,67 @@ position: absolute;
 	padding-left: 0px;
 }
 
+.lde-progress-bar {
+    padding-top: 8px;
+    padding-bottom: 8px;
+	/*border-bottom: 1px solid #D8D8D8;*/
+    padding: 10px 8px 0px;
+	border-bottom: 1px solid #D8D8D8;
+}
+
+.lde-progress-row {
+    height: 50px;
+}
+
+.lde-progress-container {
+    border: 1px solid #8f9287;
+    float: left;
+    width: 80%;
+    height: 16px;
+}
+
+.lde-progress-status {
+    background: #a8da40;
+    width: 80%;
+    height: 100%;
+}
+
+.lde-progress-value {
+    float: right;
+    width: 17%;
+    text-align: center;
+	color: #666;
+}
+
+.lde-indexing-inbox {
+    font-size: 18px;
+    font-weight: bold;
+	color: #666;
+    margin-bottom: 16px;
+    margin-top: 6px;
+}
+
+.lde-clearfix:after {
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+ 
+.lde-clearfix {
+    /*display: inline-block;*/
+}
+ 
+html[xmlns] .lde-clearfix {
+    display: block;
+}
+ 
+* html .lde-clearfix {
+    height: 1%;
+}
+
+.oM {
+	display: none;
+}
