@@ -1,6 +1,9 @@
 var API_URL;
 var activeMessage = null;
 var accountStatus;
+var sidebarClass = '.y3';
+var adBarClass = '.u5';
+
 $(function() {
   var checkForSidebarTimer = null;
   var checkForAdsTimer = null;
@@ -50,8 +53,7 @@ $(function() {
 
   function checkForSidebar() {
     // If there's no sidebar, keep checking
-    if ($('.y3').length === 0) {
-      console.log("No sidebar...");
+    if ($(sidebarClass).length === 0) {
       checkSidebarRetry--;
       if (checkSidebarRetry > 0) {
         checkForSidebarTimer = setTimeout(checkForSidebar,1000);
@@ -66,6 +68,7 @@ $(function() {
     }
   }
 
+  // Check to see if our stuff has been replaced by ads
   function checkForAds() {
     if ($('#ldengine').length === 0) {
       clearTimeout(checkForAdsTimer);
@@ -74,21 +77,29 @@ $(function() {
     }
   }
   
+  // Process the currently selected message and get related snippets
+  // to put in the side bar
   function processMessage(el) {
     var relatedEmails;
 
+    // If this is an initial message load (rather than the result
+    // of clicking a thread message) then find the last message on
+    // the page and pretend we clicked on it.
     if (_.isUndefined(el)) {
       el = $('.h7').last();
     } else {
       el = $(el);
     }
 
+    // If the message has no body (because it hasn't loaded yet)
+    // then keep retrying until it does
     if (el.find('.adP').length === 0) {
       setTimeout(processMessage,100,el[0]);
       return;
     }
 
-    // No sidebar?  Then we're not in a message.
+    // Get the user's account status to check for the inbox percent loaded
+    // and to check their login state
     $.get("http://"+API_URL+"/account/status", function(data){
       accountStatus = data;
       /*
@@ -98,6 +109,7 @@ $(function() {
       }
       */
 
+      // Kill the container if it exists
       $('#ldengine').detach();
       // Create the container
       var block = $('<div id="ldengine"></div>');
@@ -158,7 +170,7 @@ $(function() {
             $('.kv,.hn,.h7').unbind('click',clickMessageThread);
             $('.kv,.hn,.h7').bind('click',clickMessageThread);
 
-            $('.u5').css('overflow','auto');
+            $(adBarClass).css('overflow','auto');
 
             if (checkForAdsTimer === null) {
               checkForAdsTimer = setInterval(checkForAds,500);
@@ -170,14 +182,14 @@ $(function() {
     });
   }
 
+  // Callback for clicking on a message in a thread
   function clickMessageThread() {
     processMessage(this);
   }
 
-
-
 });
 
+// Callback for clicking an email snippet
 function onClickRelatedEmail() {
   removePopup();
   if (activeMessage) {
@@ -201,7 +213,7 @@ function popup(el) {
   $.link.popupTemplate($('#lde-popup'),{from:{}});
   // Bind the scroll event of the sidebar so that the popup can track with the
   // message snippet it's attached to
-  $('.u5').bind('scroll',scrollPopup);
+  $(adBarClass).bind('scroll',scrollPopup);
   // Call the scroll callback to position the popup
   scrollPopup();
   // Get the related message data to fill the popup
@@ -224,9 +236,15 @@ function onReceivedRelatedMessageDetails(data) {
     keywordIndexes.push(keyword.offset);
     keywords[keyword.offset] = keyword;
   }
+  // Sort the keywords by where they appear in the body
   keywordIndexes.sort();
   var bodyParts = [];
   var currentIndex = 0;
+  // Split the body into an array with the stylized
+  // keywords in their own elements. So for 
+  // "I love to eat spaghetti all the time", if the
+  // keyword is "spaghetti", you end up with
+  // ['I love to eat ', '<span class="lde-keyord">spaghetti</span>',' all the time']
   for (var i = 0; i < keywordIndexes.length; i++) {
     var keywordIndex = keywordIndexes[i];
     var keyword = keywords[keywordIndex];
@@ -234,15 +252,20 @@ function onReceivedRelatedMessageDetails(data) {
     bodyParts.push('<span class="lde-keyword">'+data.body.substr(keywordIndex,keyword.keyword.length) + '</span>');
     currentIndex = keywordIndex + keyword.keyword.length;
   }
+  // Make sure you get the rest of the body if it doesn't end on a keyword
   if (currentIndex < data.body.length) {
     bodyParts.push(data.body.substr(currentIndex));
   }
+  // Join the body parts back up, and replace newlines with <br/> tags
   var body = bodyParts.join('').replace(/\n/g,"<br/>");
   data.body = body;
+  // Make the date pretty
   data.date = Date.parse(data.date.replace(/\.\d+Z$/,'')).toString('MMM d');
   // Load the data into the popup
   $.link.popupTemplate($('#lde-popup'),data);
+  // Hide the loading spinner
   $('.lde-ajax-spinner').hide();
+  // Display the inner content
   $('.lde-popup-content').show();
   // Call the scroll callback to position the popup
   scrollPopup();
@@ -251,11 +274,15 @@ function onReceivedRelatedMessageDetails(data) {
 }
 
 function removePopup() {
+  // If there's an active message, make it inactive
   if (activeMessage) {
     activeMessage.removeClass('active-snippet');
   }
-  $('.u5').unbind('scroll',scrollPopup);
+  // Unbind the scroll event from the (now inactive) message
+  $(adBarClass).unbind('scroll',scrollPopup);
+  // Kill the popup
   $('#lde-popup').detach();
+  // Kill the mask
   maskMessageArea(false);
 }
 
@@ -265,7 +292,7 @@ function scrollPopup() {
   $('.lde-popup-arrow').css('top','40px');
 
   // Get the current position of the active message snippet
-  var activeMessageTop = activeMessage.offset().top - $('.u5').offset().top;
+  var activeMessageTop = activeMessage.offset().top - $(adBarClass).offset().top;
   var popupTop;
 
   if (activeMessageTop < 0) {
@@ -277,14 +304,14 @@ function scrollPopup() {
       $('.lde-popup-arrow').hide();
     }
   }
-  else if (activeMessageTop + $('#lde-popup').height() > $('.u5').height()) {
+  else if (activeMessageTop + $('#lde-popup').height() > $(adBarClass).height()) {
     // If the message snippet is low enough that the popup would start to be
     // pushed off-screen, then peg the popup to the bottom of the message view
-    popupTop = ($('.u5').height() - $('#lde-popup').height());
+    popupTop = ($(adBarClass).height() - $('#lde-popup').height());
     // Move the arrow so that it's consistently pointing at the message snippet
-    $('.lde-popup-arrow').css('top',40-($('.u5').height() - (activeMessageTop + $('#lde-popup').height()))+'px');
+    $('.lde-popup-arrow').css('top',40-($(adBarClass).height() - (activeMessageTop + $('#lde-popup').height()))+'px');
     // If the message snippet is out of view, hide the arrow
-    if (activeMessageTop > ($('.u5').height()-40)) {
+    if (activeMessageTop > ($(adBarClass).height()-40)) {
       $('.lde-popup-arrow').hide();
     }
   }
@@ -294,17 +321,18 @@ function scrollPopup() {
   }
   // Account for the fact that the message snippet bar may not be at the top of the
   // sidebar (because there might be contact details or something else on top of it)
-  popupTop += $('.u5').position().top;
+  popupTop += $(adBarClass).position().top;
   $('#lde-popup').css('top',popupTop+'px');
 }
 
 function placeBlock(block) {
+  // Do some adjustments on the ad bar container and the adbar
   $('.adC').css('right','20px').css('marginRight','0px').css('width','236px');
-  $('.u5').css('width','232px');
+  $(adBarClass).css('width','232px');
   // If there's an ad bar, replace it with our stuff
-  if ($('.u5').length > 0) {
-    $('.u5').empty();
-    $('.u5').append(block);
+  if ($(adBarClass).length > 0) {
+    $(adBarClass).empty();
+    $(adBarClass).append(block);
   }
   // Otherwise, if the sidebar has contact info at the top, insert our content after it
   else if ($('.anT').length > 0) {
