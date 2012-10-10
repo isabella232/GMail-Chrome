@@ -23,6 +23,7 @@ $(function() {
     getSettings()
   ).then(function(){
       $.when(
+        $.get(chrome.extension.getURL("ldengine.tmpl"), function(data){$.templates('ldengineTemplate',data);}, 'html'),
         $.get(chrome.extension.getURL("sidebar.tmpl"), function(data){$.templates('sidebarTemplate',data);}, 'html'),
         $.get(chrome.extension.getURL("popup.tmpl"), function(data){$.templates('popupTemplate',data);}, 'html'),
         $.get(chrome.extension.getURL("progressbar.tmpl"), function(data){$.templates('progressbarTemplate',data);}, 'html')
@@ -88,11 +89,12 @@ $(function() {
       }
       */
 
-      $('.ldengine').detach();
+      $('#ldengine').detach();
       // Create the container
-      var block = $('<div id="ldengine"><div class="lde-progress-bar"></div><div class="lde-related-emails"></div></div>');
+      var block = $('<div id="ldengine"></div>');
       // Place it on the page
       placeBlock(block);
+      $.link.ldengineTemplate('#ldengine');
 
       // Place the progress bar
       var percentIndexed = accountStatus.percentIndexed || 83;

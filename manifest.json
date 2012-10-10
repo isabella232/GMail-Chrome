@@ -24,6 +24,7 @@
     "storage"
   ],
   "web_accessible_resources": [
+    "ldengine.tmpl",
     "sidebar.tmpl",
     "popup.tmpl",
     "progressbar.tmpl",
