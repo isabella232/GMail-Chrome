@@ -19,7 +19,7 @@
   "permissions": [
     "http://localhost/",
     "http://apps.ldengine.com/",
-    "https://apps.ldengine.com",
+    "https://apps.ldengine.com/",
     "http://198.101.252.118:3000/",
     "http://127.0.0.1:3000/",
     "http://198.101.252.118:3001/",
