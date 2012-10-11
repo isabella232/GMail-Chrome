@@ -3,10 +3,114 @@ var activeMessage = null;
 var accountStatus;
 
 
+
 var templatesReady = false;
 
-// Shared alarm object be
-var messageScrapeAlarm;				
+// Shared alarm object for message scrape-readiness
+var messageScrapeAlarm;
+
+
+/**
+ * @test - condition to check
+ * @action - do something
+ * @tryInterval - how often to try (default to 50ms)
+ * @sharedTimer - if sharedTimer is specified, clear it when action is fired
+ * @eachTime - function to run each time the condition is checked
+ * returns timer
+ */
+
+function waitUntil(test, action, tryInterval, sharedTimer, eachTime) {
+	var timer = setInterval(function() {
+		typeof eachTime === "function" && eachTime();
+		if(test()) {
+			clearInterval(timer);
+			sharedTimer && clearInterval(sharedTimer);
+			action();
+		}
+	}, tryInterval || 50);
+
+	return timer;
+}
+
+// A version of waitUntil that won't fire more than once every five seconds
+var throttledWaitUntil = _.throttle(waitUntil, 5000);
+
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
 
 var Gmail = {
 
@@ -15,7 +119,7 @@ var Gmail = {
 		adbar: '.u5',
 		message: {
 			body: '.adP',
-			container: 'h7'
+			container: '.h7'
 		}
 	},
 
@@ -23,10 +127,13 @@ var Gmail = {
 
 		// Scrape the message data from the DOM
 		scrape: function($el, callback) {
+			console.log("Starting scrape process...");
+			var thisMessageIsReadyToScrape = _.bind(Gmail.message.isReadyToScrape, this, $el);
 
 			// When this message is loaded, scrape it
 			// Use a global timer to prevent multiple clicks from firing multiple POSTs
-			messageScrapeAlarm = waitUntil(isLoaded, function() {
+			clearInterval(messageScrapeAlarm);
+			messageScrapeAlarm = waitUntil(thisMessageIsReadyToScrape, function() {
 
 				// Get the addresses of people this email was sent to
 				var recipientEmails = _.map($el.find('.hb').find('[email]'), function(recipientEl) {
@@ -37,44 +144,114 @@ var Gmail = {
 				callback(null, {
 					Message: {
 						subject: $('.hP').text(),
-						body: $el.find(Gmail.selectors.message.body).last().text().replace(/\n/g, ' '),
+						body: $el.find(Gmail.selectors.message.body).text().replace(/\n/g, ' '),
+						// body: $el.find(Gmail.selectors.message.body).last().text().replace(/\n/g, ' '),
 						from: $el.find('.gD').attr('email'),
 						to: recipientEmails
 						// TODO: cc, bcc
 					}
 				});
 
-			}, 50, messageScrapeAlarm);
+			});
 		},
 
 		// Returns whether the *expanded* message is finished loading (and is therefore scrape-able)
-		isLoaded: function($el) {
-			return $el.find(Gmail.selectors.message.body).length === 0;
+		isReadyToScrape: function($el) {
+			console.log("Is ready to scrape?!?!?!",$el);
+			// console.log("Checking if ",$el," is loaded...", "Looking at ", $el.find(Gmail.selectors.message.body));
+			return $el.find(Gmail.selectors.message.body).length;
 		},
 
 		// Triggered when a message container is clicked
 		click: function($el) {
-			var isLoaded = _.bind(Gmail.message.isLoaded, this, $el);
+			var isThisMessageReadyToScrape = _.bind(Gmail.message.isReadyToScrape, this, $el);
 
 			// TODO: call scrape()
 		},
 
-		// Bind a click event to the necessary elements to affect this message
-		bindClick: function($el) {
+		// Bind a click event to each message
+		bindClick: function() {
 			// $('.kv,.hn,.h7').bind('click', clickMessageThread);
 		},
 
 		// TODO: POST the message object to the server
-		post: function(messageApiObj) {
+		post: function(messageApiObj, callback) {
 			console.log("* POST the messageApiObj", messageApiObj);
 
-			// afterwards
-			// TODO: remove the loading spinner
-			// TODO: render the message snippets returned from the server
+			// Post the message to the server and get related snippets
+			$.ajax("http://" + API_URL + "/message/relatedSnippets", {
+				type: 'POST',
+				data: messageApiObj,
+				done: callback,
+				dataType: 'json'
+			});
 		}
 	}
-
 };
+
+// Bind objects so we can use *this*
+_.bindAll(Gmail);
+_.bindAll(Gmail.message);
+
+
+
+
+
+
+
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+
+
 
 
 var LDEngine = {
@@ -83,31 +260,99 @@ var LDEngine = {
 
 		// Returns whether the sidebar can be appended safely
 		isReadyToBeAppended: function() {
+			console.log("Is ready to be appended?!?!?!");
 			return templatesReady && $(Gmail.selectors.sidebar).length;
 		},
 
 		init: function() {
 			this.append();
 			this.appendLoadingSpinner();
-			// TODO: $el = the default message $el (the .last() one)
-			Gmail.message.bindClick($el);
-			Gmail.message.scrape($el,function(err,messageApiObj) {
-				Gmail.message.post(messageApiOb, function (err,messageSnippets) {
-					// TODO: render the message
+
+			// Get the last message element
+			$el = $(Gmail.selectors.message.container).last();
+			console.log("Message to scrape:",$el, "body:",$el.find(Gmail.selectors.message.body));
+
+			// Scrape the message from the Gmail UI
+			Gmail.message.scrape($el, function(err, messageApiObj) {
+
+				console.log("Scraped message: ",messageApiObj);
+
+				// Send the scrapped message to the server
+				Gmail.message.post(messageApiObj, function(messageSnippets, textStatus) { // afterwards
+					// TODO: remove the loading spinner
+					// TODO: render the message snippets returned from the server
+
+					console.log("Data from server: ", textStatus);
+
+					// Format some stuff up in the data
+					// for(var i = 0; i < relatedEmails.length; i++) {
+					// 	var relatedEmail = relatedEmails[i];
+					// 	relatedEmail.date = Date.parse(relatedEmail.date.replace(/\.\d+Z$/, '')).toString('MMM d');
+					// 	relatedEmails[i] = relatedEmail;
+					// }
+					// // Add the related emails to the sidebar
+					// $.link.sidebarTemplate(".lde-related-emails", relatedEmails);
+					// // Ellipsize the related email snippets
+					// $('.lde-email-result').dotdotdot();
+					// // Hook up ze clicks
+					// for(var i = 0; i < relatedEmails.length; i++) {
+					// 	$($('.lde-email-result')[i]).data('data', relatedEmails[i]).click(onClickRelatedEmail);
+					// }
+					// $('.kv,.hn,.h7').unbind('click', clickMessageThread);
+					// $('.kv,.hn,.h7').bind('click', clickMessageThread);
+					// $(adBarClass).css('overflow', 'auto');
+					// if(checkForAdsTimer === null) {
+					// 	checkForAdsTimer = setInterval(checkForAds, 500);
+					// }
+					// TODO: render the snippets
 				});
 			});
+
+			// Listen for clicks on all messages
+			Gmail.message.bindClick();
 		},
 
 		// Append sidebar to appropriate place in DOM
 		append: function() {
+			console.log("Appending sidebar...");
 
-			// TODO: append empty sidebar
-			console.log("\n\n", "** THIS IS WHEN THE SIDEBAR WOULD BE APPENDED", "\n\n");
+			// Kill the container if it exists
+			if($('#ldengine').length) {
+				console.warn("SIDEBAR ALREADY EXISTS, detaching...");
+				$('#ldengine').detach();
+			}
+			// Create the container
+			var block = $('<div id="ldengine"></div>');
+
+			// Place it on the page
+			// Do some adjustments on the ad bar container and the adbar
+			// $('.adC').css('right', '20px').css('marginRight', '0px').css('width', '236px');
+			// $(adBarClass).css('width', '232px');
+			// // If there's an ad bar, replace it with our stuff
+			// if($(adBarClass).length > 0) {
+			// 	$(adBarClass).empty();
+			// 	$(adBarClass).append(block);
+			// }
+			// // Otherwise, if the sidebar has contact info at the top, insert our content after it
+			// else if($('.anT').length > 0) {
+			// 	block.insertAfter($('.anT'));
+			// }
+			// // Otherwise our content at the top of the sidebar
+			// else {
+				$('.adC').prepend(block);
+			// }
+
+			// No data; just a cheap way to render the html template
+			$.link.ldengineTemplate('#ldengine');
 
 		},
 
 		// TODO: append loading spinner tp sidebar
 		appendLoadingSpinner: function() {
+
+		},
+
+		renderSnippets: {
 
 		},
 
@@ -119,11 +364,59 @@ var LDEngine = {
 };
 
 // Bind objects so we can use *this*
-_.bindAll(Gmail);
-_.bindAll(Gmail.message);
 _.bindAll(LDEngine.sidebar);
 
-
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
 
 // Bootstrap
 $(function() {
@@ -147,6 +440,7 @@ $(function() {
 	// Create a deferred object to wrap around a call to Chrome's
 	// local storage API.  This lets us chain our request for
 	// settings with our other startup requests
+
 	function getSettings() {
 		var getApiURLDeferredObj = $.Deferred();
 		chrome.storage.local.get('ldengine_api_url', function(items) {
@@ -177,86 +471,533 @@ $(function() {
 
 
 
-	/**
-	 * @test - condition to check
-	 * @action - do something
-	 * @tryInterval - how often to try (default to 50ms)
-	 * @sharedTimer - if sharedTimer is specified, clear it when action is fired
-	 * @eachTime - function to run each time the condition is checked
-	 * returns timer
-	 */
-
-	function waitUntil(test, action, tryInterval, sharedTimer, eachTime) {
-		var timer = setInterval(function() {
-			typeof eachTime === "function" && eachTime();
-			if(test()) {
-				clearInterval(timer);
-				sharedTimer && clearInterval(sharedTimer);
-				action();
-			}
-		}, tryInterval || 50);
-
-		return timer;
-	}
-
-	// A version of waitUntil that won't fire more than once every five seconds
-	var throttledWaitUntil = _.throttle(waitUntil, 5000);
-
-
 	////////
-
 	///////
-
 	//////////
-
 	////////
-
 	///////
-
 	//////////
-
 	////////
-
 	///////
-
 	//////////
-
 	////////
-
 	///////
-
 	//////////
-
 	////////
-
 	///////
-
 	//////////
-
 	////////
-
 	///////
-
 	//////////
-
 	////////
-
 	///////
-
 	//////////
-
 	////////
-
 	///////
-
 	//////////
-
 	////////
-
+	///////	////////
 	///////
-
 	//////////
-
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
+	////////
+	///////
+	//////////
 	// Process the currently selected message and get related snippets
 	// to put in the side bar
 
@@ -292,17 +1033,6 @@ $(function() {
 
 
 
-			// Kill the container if it exists
-			$('#ldengine').detach();
-			// Create the container
-			var block = $('<div id="ldengine"></div>');
-			// Place it on the page
-			placeBlock(block);
-			// No data; just a cheap way to render the html template
-			$.link.ldengineTemplate('#ldengine');
-
-
-
 			// Place the progress bar
 			var percentIndexed = accountStatus.percentIndexed || 83;
 			$('.lde-progress-bar').html('');
@@ -333,39 +1063,6 @@ $(function() {
 			// 		bcc: []
 			// 	}
 			// };
-			// Post the message to the server and get related snippets
-			$.ajax("http://" + API_URL + "/message/relatedSnippets", {
-				type: 'POST',
-				data: postData,
-				success: function(data) {
-					relatedEmails = data;
-					// Format some stuff up in the data
-					for(var i = 0; i < relatedEmails.length; i++) {
-						var relatedEmail = relatedEmails[i];
-						relatedEmail.date = Date.parse(relatedEmail.date.replace(/\.\d+Z$/, '')).toString('MMM d');
-						relatedEmails[i] = relatedEmail;
-					}
-					// Add the related emails to the sidebar
-					$.link.sidebarTemplate(".lde-related-emails", relatedEmails);
-					// Ellipsize the related email snippets
-					$('.lde-email-result').dotdotdot();
-					// Hook up ze clicks
-					for(var i = 0; i < relatedEmails.length; i++) {
-						$($('.lde-email-result')[i]).data('data', relatedEmails[i]).click(onClickRelatedEmail);
-					}
-
-					$('.kv,.hn,.h7').unbind('click', clickMessageThread);
-					$('.kv,.hn,.h7').bind('click', clickMessageThread);
-
-					$(adBarClass).css('overflow', 'auto');
-
-					if(checkForAdsTimer === null) {
-						checkForAdsTimer = setInterval(checkForAds, 500);
-					}
-
-				},
-				dataType: 'json'
-			});
 		});
 	}
 
