@@ -552,6 +552,8 @@ $(function() {
 			$.templates('sidebarTemplate', data);
 		}, 'html'), $.get(chrome.extension.getURL("popup.tmpl"), function(data) {
 			$.templates('popupTemplate', data);
+		}, 'html'), $.get(chrome.extension.getURL("unauthenticated.tmpl"), function(data) {
+			$.templates('unauthTemplate', data);
 		}, 'html'), $.get(chrome.extension.getURL("progressbar.tmpl"), function(data) {
 			$.templates('progressbarTemplate', data);
 		}, 'html')).then(function() {
