@@ -256,20 +256,25 @@ var LDEngine = {
 		},
 
 		init: function() {
-
 			// Send request to server to see whether the user is logged in or not.
+			console.log("Checking logged in status at " + API_URL);
 			$.get("http://" + API_URL + "/account/status", function(data) {
 				LDEngine.sidebar.accountStatus = data;
-			});
-
-			if(!LDEngine.sidebar.accountStatus) {
-
-				$.link.unauthTemplate($('.lde-unauthenticated'), LDEngine.sidebar.accountStatus.AuthUrl.url);
 				
-				// var unauthenticatedTemplate = $('<div id="lde-unauthenticated"></div>');
-				// 	$('lde-progress-bar').append(unauthenticatedTemplate);
-				return;
-			}
+				console.log("Server say ",LDEngine.sidebar.accountStatus);
+
+				// Render the appropriate UI depending if you have the data
+				if (LDEngine.sidebar.accountStatus.status !== 'linked') {
+					LDEngine.sidebar.append();
+					$.link.unauthTemplate($('.lde-unauthenticated'), LDEngine.sidebar.accountStatus.AuthUrl.url);
+				} else {
+					LDEngine.sidebar.renderUI();
+				}
+
+			});
+		},
+
+		renderUI: function() {
 
 			// Draw empty sidebar
 			this.append();
