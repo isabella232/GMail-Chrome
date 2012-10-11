@@ -30,6 +30,7 @@
     "snippet.tmpl",
     "popup.tmpl",
     "progressbar.tmpl",
+    "unauthenticated.tmpl",
     "ajax-loader.gif",
     "icon_close.gif",
     "close_message.gif"
