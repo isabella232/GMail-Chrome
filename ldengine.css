@@ -64,13 +64,14 @@
 }
 
 .lde-popup-subject {
-	font-size: 18px;
+	font-size: 20px;
 	padding-bottom: 12px;
-	border-bottom: solid 1px #666;
+	border-bottom: solid 1px #ccc;
 	margin-bottom: 10px;
 }
 
 .lde-popup-msg-header {
+	padding-top:10px;
 	overflow: visible;
 	margin-bottom: 45px;
 }
@@ -107,7 +108,7 @@
 #ldengine {
 	background: inherit;
 	padding-top: 10px;
-	padding-left: 8px;
+	padding-left: 0px;
 	position: relative;
 	overflow: hidden;
 	margin-top: 0;
@@ -116,7 +117,7 @@
 
 #lde-msg-mask {
 	background:#999;
-	width:100%;
+	width:99.1%;
 	height:100%;
 	opacity:.3;
 	position:absolute;
@@ -147,12 +148,12 @@ position: absolute;
 }
 
 .lde-popup-close-button {
-	width: 20px;
+	width: 23px;
 	height: 20px;
-	background-image:url('chrome-extension://__MSG_@@extension_id__/close_message.gif');	
+	background-image:url('chrome-extension://__MSG_@@extension_id__/icon_close.gif');	
 	position: absolute;
-	top: 5px;
-	right: 5px;
+	top: 0px;
+	right: 0px;
 	cursor: pointer;
 }
 
@@ -207,6 +208,7 @@ position: absolute;
 }
 
 .lde-progress-value {
+	font-size: 80%;
     float: right;
     width: 17%;
     text-align: center;
