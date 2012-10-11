@@ -266,7 +266,7 @@ var LDEngine = {
 				// Render the appropriate UI depending if you have the data
 				if (LDEngine.sidebar.accountStatus.status !== 'linked') {
 					LDEngine.sidebar.append();
-					$.link.unauthTemplate($('.lde-unauthenticated'), LDEngine.sidebar.accountStatus.AuthUrl.url);
+					$.link.unauthTemplate($('.lde-unauthenticated'), LDEngine.sidebar.accountStatus.AuthUrl);
 				} else {
 					LDEngine.sidebar.renderUI();
 				}
