@@ -264,7 +264,7 @@ var LDEngine = {
 
 			if(!LDEngine.sidebar.accountStatus) {
 
-				$.link.unauthTemplate($('.lde-unauthenticated'));
+				$.link.unauthTemplate($('.lde-unauthenticated'), LDEngine.sidebar.accountStatus.AuthUrl.url);
 				
 				// var unauthenticatedTemplate = $('<div id="lde-unauthenticated"></div>');
 				// 	$('lde-progress-bar').append(unauthenticatedTemplate);
