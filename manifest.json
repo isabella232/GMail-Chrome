@@ -12,7 +12,7 @@
   "content_scripts": [
     {
       "matches": [ "*://mail.google.com/*"],
-      "js" : ["jquery-1.8.2.min.js","underscore-min.js","date.js","jquery.dotdotdot-1.5.1.js","jsrender.js","jquery.views.js","jquery.observable.js","ldengine.js"],
+      "js" : ["async.min.js","jquery-1.8.2.min.js","underscore-min.js","date.js","jquery.dotdotdot-1.5.1.js","jsrender.js","jquery.views.js","jquery.observable.js","ldengine.js"],
       "css" : ["ldengine.css"]
     }
   ],
@@ -27,7 +27,7 @@
   ],
   "web_accessible_resources": [
     "ldengine.tmpl",
-    "sidebar.tmpl",
+    "snippet.tmpl",
     "popup.tmpl",
     "progressbar.tmpl",
     "ajax-loader.gif",
