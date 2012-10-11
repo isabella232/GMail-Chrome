@@ -256,6 +256,21 @@ var LDEngine = {
 		},
 
 		init: function() {
+
+			// Send request to server to see whether the user is logged in or not.
+			$.get("http://" + API_URL + "/account/status", function(data) {
+				LDEngine.sidebar.accountStatus = data;
+			});
+
+			if(!LDEngine.sidebar.accountStatus) {
+
+				$.link.unauthTemplate($('.lde-unauthenticated'));
+				
+				// var unauthenticatedTemplate = $('<div id="lde-unauthenticated"></div>');
+				// 	$('lde-progress-bar').append(unauthenticatedTemplate);
+				return;
+			}
+
 			// Draw empty sidebar
 			this.append();
 
@@ -430,7 +445,7 @@ var LDEngine = {
 
 		// Close the popup and hide the veil
 		close: function() {
-			
+
 
 			$('#lde-popup').detach();
 
