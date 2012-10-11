@@ -35,83 +35,82 @@ function waitUntil(test, action, tryInterval, sharedTimer, eachTime) {
 // A version of waitUntil that won't fire more than once every five seconds
 var throttledWaitUntil = _.throttle(waitUntil, 5000);
 
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////	////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////	////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
 var Gmail = {
 
 	selectors: {
@@ -157,7 +156,7 @@ var Gmail = {
 
 		// Returns whether the *expanded* message is finished loading (and is therefore scrape-able)
 		isReadyToScrape: function($el) {
-			console.log("Is ready to scrape?!?!?!",$el);
+			console.log("Is ready to scrape?!?!?!", $el);
 			// console.log("Checking if ",$el," is loaded...", "Looking at ", $el.find(Gmail.selectors.message.body));
 			return $el.find(Gmail.selectors.message.body).length;
 		},
@@ -182,7 +181,7 @@ var Gmail = {
 			$.ajax("http://" + API_URL + "/message/relatedSnippets", {
 				type: 'POST',
 				data: messageApiObj,
-				done: callback,
+				success: callback,
 				dataType: 'json'
 			});
 		}
@@ -195,65 +194,57 @@ _.bindAll(Gmail.message);
 
 
 
-
-
-
-
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-
-
-
-
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////	////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
 var LDEngine = {
 
 	sidebar: {
@@ -265,46 +256,42 @@ var LDEngine = {
 		},
 
 		init: function() {
+			// Draw empty sidebar
 			this.append();
+
+			// If your'e not logged in:
+			// todo
+			// If you're logged in, do all this:
+			// Draw loading spinner
 			this.appendLoadingSpinner();
 
 			// Get the last message element
 			$el = $(Gmail.selectors.message.container).last();
-			console.log("Message to scrape:",$el, "body:",$el.find(Gmail.selectors.message.body));
+			console.log("Message to scrape:", $el, "body:", $el.find(Gmail.selectors.message.body));
 
 			// Scrape the message from the Gmail UI
 			Gmail.message.scrape($el, function(err, messageApiObj) {
 
-				console.log("Scraped message: ",messageApiObj);
+				console.log("Scraped message: ", messageApiObj);
 
 				// Send the scrapped message to the server
 				Gmail.message.post(messageApiObj, function(messageSnippets, textStatus) { // afterwards
 					// TODO: remove the loading spinner
-					// TODO: render the message snippets returned from the server
+					// Marshal data from server
+					console.log("Data from server: ", messageSnippets);
 
-					console.log("Data from server: ", textStatus);
+					_.map(messageSnippets, function(messageSnippet) {
+						return _.extend(messageSnippet, {
+							date: messageSnippet.date && new Date(messageSnippet.date).toString('MMM d'),
+							from: _.extend(messageSnippet.from, {
+								name: !messageSnippet.from.name && messageSnippet.from.email
+							})
+						});
+					});
 
-					// Format some stuff up in the data
-					// for(var i = 0; i < relatedEmails.length; i++) {
-					// 	var relatedEmail = relatedEmails[i];
-					// 	relatedEmail.date = Date.parse(relatedEmail.date.replace(/\.\d+Z$/, '')).toString('MMM d');
-					// 	relatedEmails[i] = relatedEmail;
-					// }
-					// // Add the related emails to the sidebar
-					// $.link.sidebarTemplate(".lde-related-emails", relatedEmails);
-					// // Ellipsize the related email snippets
-					// $('.lde-email-result').dotdotdot();
-					// // Hook up ze clicks
-					// for(var i = 0; i < relatedEmails.length; i++) {
-					// 	$($('.lde-email-result')[i]).data('data', relatedEmails[i]).click(onClickRelatedEmail);
-					// }
-					// $('.kv,.hn,.h7').unbind('click', clickMessageThread);
-					// $('.kv,.hn,.h7').bind('click', clickMessageThread);
-					// $(adBarClass).css('overflow', 'auto');
-					// if(checkForAdsTimer === null) {
-					// 	checkForAdsTimer = setInterval(checkForAds, 500);
-					// }
-					// TODO: render the snippets
+					// Render the message snippets returned from the server
+					LDEngine.sidebar.renderSnippets(messageSnippets);
+
 				});
 			});
 
@@ -339,9 +326,8 @@ var LDEngine = {
 			// }
 			// // Otherwise our content at the top of the sidebar
 			// else {
-				$('.adC').prepend(block);
+			$('.adC').prepend(block);
 			// }
-
 			// No data; just a cheap way to render the html template
 			$.link.ldengineTemplate('#ldengine');
 
@@ -352,72 +338,158 @@ var LDEngine = {
 
 		},
 
-		renderSnippets: {
+		renderSnippets: function(messageSnippets) {
 
+			// Add the related emails to the sidebar
+			$.link.sidebarTemplate(".lde-related-emails", messageSnippets);
+
+			// Ellipsize the related email snippets
+			$('.lde-email-result').dotdotdot();
+
+			// Bind click events to message snippets
+			for(var i = 0; i < messageSnippets.length; i++) {
+				var messageSnippet = $($('.lde-email-result')[i]);
+				messageSnippet.attr('data-id', messageSnippets[i].id);
+				messageSnippet.click(LDEngine.sidebar.clickSnippet);
+			}
+
+
+		},
+
+		//  Clicking on the snippet calls fetch
+		clickSnippet: function(e) {
+
+			var id = $(e.currentTarget).attr('data-id');
+
+			// Fetch contents of popup
+			LDEngine.popup.fetch(id);
 		},
 
 		progressBar: {
 
 		}
 
+	},
+
+
+
+	/**
+	 * The popup
+	 */
+	popup: {
+
+		// Gets the message details from the server
+		fetch: function(id) {
+
+			// Display empty popup, clear model, and abort pending xhr request if necessary
+			LDEngine.popup.model = null;
+			LDEngine.popup.display();
+			if(LDEngine.popup.xhr) {
+				LDEngine.popup.xhr.abort();
+			}
+
+			// Get the message details from the server
+			console.log("Start fetching", id);
+			LDEngine.popup.xhr = $.get('http://' + API_URL + '/message', {
+				id: id
+			}, function(model) {
+				LDEngine.popup.model = model;
+				LDEngine.popup.display();
+			});
+		},
+
+		// Display the popup
+		display: function() {
+
+			// TODO: draw the veil
+			// Render the popup content
+			if(!LDEngine.popup.model) {
+				// Attach the popup container if necessary
+				if(! $('#lde-popup').length) {
+					var popupEl = $('<div id="lde-popup"></div>');
+					$('.adC').parent().append(popupEl);
+				}
+
+				// Show the loading spinner and hide inner content
+				$.link.popupTemplate($('#lde-popup'), {
+					from: {}
+				});
+				$('.lde-ajax-spinner').show();
+				$('.lde-popup-content').hide();
+
+			} else {
+				// Retemplate
+				$.link.popupTemplate($('#lde-popup'), LDEngine.popup.model);
+
+				// Hide the loading spinner and display inner content
+				$('.lde-ajax-spinner').hide();
+				$('.lde-popup-content').show();
+			}
+
+			// Hook up the close button
+			$('.lde-popup-close-button').click(LDEngine.popup.hide());
+		},
+
+		hide: function() {
+
+		}
 	}
 };
 
 // Bind objects so we can use *this*
 _.bindAll(LDEngine.sidebar);
 
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-	//////////
-	////////
-	///////
-
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////	////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
 // Bootstrap
 $(function() {
 
@@ -1000,6 +1072,12 @@ $(function() {
 	//////////
 	// Process the currently selected message and get related snippets
 	// to put in the side bar
+	// $('.kv,.hn,.h7').unbind('click', clickMessageThread);
+	// 				$('.kv,.hn,.h7').bind('click', clickMessageThread);
+	// 				$(adBarClass).css('overflow', 'auto');
+	// 				if(checkForAdsTimer === null) {
+	// 					checkForAdsTimer = setInterval(checkForAds, 500);
+	// 				}
 
 	function processMessage(el) {
 		var relatedEmails;
@@ -1086,31 +1164,13 @@ function onClickRelatedEmail() {
 	popup(activeMessage);
 }
 
-function popup(el) {
-	if(el === false) {
-		return;
-	}
-	// Mask the message area
-	maskMessageArea();
-	// Popup the popup
-	$('.adC').parent().append($('<div id="lde-popup"></div>'));
-	// Since we have vars in the template of the form "from.xyz", the rendering engine will complain
-	// if there isn't a "from" object in the data.  So we'll make a blank one and pass it in.
-	$.link.popupTemplate($('#lde-popup'), {
-		from: {}
-	});
-	// Bind the scroll event of the sidebar so that the popup can track with the
-	// message snippet it's attached to
-	$(adBarClass).bind('scroll', scrollPopup);
-	// Call the scroll callback to position the popup
-	scrollPopup();
-	// Get the related message data to fill the popup
-	$.get('http://' + API_URL + '/message', {
-		id: el.data('data').id
-	}, onReceivedRelatedMessageDetails);
-	// Hook up the close button
-	$('.lde-popup-close-button').click(removePopup);
-}
+
+
+//
+//
+//  Appending the dialog box
+//
+//
 
 function onReceivedRelatedMessageDetails(data) {
 	// First, highlight the keywords.
@@ -1163,6 +1223,88 @@ function onReceivedRelatedMessageDetails(data) {
 	$('.lde-popup-close-button').click(removePopup);
 }
 
+////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////	////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////
+//////////
+////////
+///////	////////
+///////
+//////////
+////////
+///////
+//////////
+
+function popup(el) {
+	if(el === false) {
+		return;
+	}
+	// Mask the message area
+	maskMessageArea();
+	// Popup the popup
+	$('.adC').parent().append($('<div id="lde-popup"></div>'));
+	// Since we have vars in the template of the form "from.xyz", the rendering engine will complain
+	// if there isn't a "from" object in the data.  So we'll make a blank one and pass it in.
+	$.link.popupTemplate($('#lde-popup'), {
+		from: {}
+	});
+	// Bind the scroll event of the sidebar so that the popup can track with the
+	// message snippet it's attached to
+	$(adBarClass).bind('scroll', scrollPopup);
+	// Call the scroll callback to position the popup
+	scrollPopup();
+	// Get the related message data to fill the popup
+	$.get('http://' + API_URL + '/message', {
+		id: el.data('data').id
+	}, onReceivedRelatedMessageDetails);
+	// Hook up the close button
+	$('.lde-popup-close-button').click(removePopup);
+}
+
 function removePopup() {
 	// If there's an active message, make it inactive
 	if(activeMessage) {
@@ -1177,6 +1319,9 @@ function removePopup() {
 }
 
 function scrollPopup() {
+
+
+
 	// Reset the arrow state
 	$('.lde-popup-arrow').show();
 	$('.lde-popup-arrow').css('top', '40px');
@@ -1214,24 +1359,24 @@ function scrollPopup() {
 	$('#lde-popup').css('top', popupTop + 'px');
 }
 
-function placeBlock(block) {
-	// Do some adjustments on the ad bar container and the adbar
-	$('.adC').css('right', '20px').css('marginRight', '0px').css('width', '236px');
-	$(adBarClass).css('width', '232px');
-	// If there's an ad bar, replace it with our stuff
-	if($(adBarClass).length > 0) {
-		$(adBarClass).empty();
-		$(adBarClass).append(block);
-	}
-	// Otherwise, if the sidebar has contact info at the top, insert our content after it
-	else if($('.anT').length > 0) {
-		block.insertAfter($('.anT'));
-	}
-	// Otherwise our content at the top of the sidebar
-	else {
-		$('.adC').prepend(block);
-	}
-}
+// function placeBlock(block) {
+// 	// Do some adjustments on the ad bar container and the adbar
+// 	$('.adC').css('right', '20px').css('marginRight', '0px').css('width', '236px');
+// 	$(adBarClass).css('width', '232px');
+// 	// If there's an ad bar, replace it with our stuff
+// 	if($(adBarClass).length > 0) {
+// 		$(adBarClass).empty();
+// 		$(adBarClass).append(block);
+// 	}
+// 	// Otherwise, if the sidebar has contact info at the top, insert our content after it
+// 	else if($('.anT').length > 0) {
+// 		block.insertAfter($('.anT'));
+// 	}
+// 	// Otherwise our content at the top of the sidebar
+// 	else {
+// 		$('.adC').prepend(block);
+// 	}
+// }
 
 function maskMessageArea(mask) {
 	$('#lde-msg-mask').detach();
