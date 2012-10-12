@@ -33,7 +33,8 @@
     "unauthenticated.tmpl",
     "ajax-loader.gif",
     "icon_close.gif",
-    "close_message.gif"
+    "close_message.gif",
+    "image_anonymousLarge@2x.png"
   ],
   "options_page": "options.html"
 }
