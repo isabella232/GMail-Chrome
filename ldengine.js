@@ -106,7 +106,7 @@ var Gmail = {
 
 
 			// Post the message to the server and get related snippets
-			$.ajax(LDEngine.protocol + API_URL + "/message/relatedSnippets", {
+			$.ajax(API_URL + "/message/relatedSnippets", {
 				type: 'POST',
 				data: messageApiObj,
 				success: callback,
@@ -125,8 +125,6 @@ _.bindAll(Gmail.message);
 
 var LDEngine = {
 
-	protocol: "https://",
-
 	sidebar: {
 
 		// Returns whether the sidebar can be appended safely
@@ -138,7 +136,7 @@ var LDEngine = {
 		init: function() {
 			// Send request to server to see whether the user is logged in or not.
 			console.log("Checking logged in status at " + API_URL);
-			$.get(LDEngine.protocol + API_URL + "/account/status", function(data) {
+			$.get(API_URL + "/account/status", function(data) {
 				LDEngine.sidebar.accountStatus = data;
 				
 				console.log("Server say ",LDEngine.sidebar.accountStatus);
@@ -288,7 +286,7 @@ var LDEngine = {
 
 			// Get the message details from the server
 			console.log("Start fetching", id);
-			LDEngine.popup.xhr = $.get('http://' + API_URL + '/message', {
+			LDEngine.popup.xhr = $.get(API_URL + '/message', {
 				id: id
 			}, function(model) {
 				LDEngine.popup.model = model;
@@ -374,7 +372,7 @@ $(function() {
 			// For now, to avoid any weird issues w/ people who already installed 
 			// the existing version, hard-code the production host
 			// API_URL = "apps.ldengine.com";
-			API_URL = items.ldengine_api_url || "apps.ldengine.com";
+			API_URL = items.ldengine_api_url || "https://apps.ldengine.com";
 			getApiURLDeferredObj.resolve();
 		});
 		return getApiURLDeferredObj.promise();
@@ -709,7 +707,7 @@ $(function() {
 // 	// Call the scroll callback to position the popup
 // 	scrollPopup();
 // 	// Get the related message data to fill the popup
-// 	$.get('http://' + API_URL + '/message', {
+// 	$.get(API_URL + '/message', {
 // 		id: el.data('data').id
 // 	}, onReceivedRelatedMessageDetails);
 // 	// Hook up the close button
