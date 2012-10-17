@@ -134,12 +134,14 @@ var LDEngine = {
 		},
 
 		init: function() {
+
+			this.appendLoadingSpinner();
 			// Send request to server to see whether the user is logged in or not.
 			console.log("Checking logged in status at " + API_URL);
 			$.get(API_URL + "/account/status", function(data) {
 				LDEngine.sidebar.accountStatus = data;
 				
-				console.log("Server say ",LDEngine.sidebar.accountStatus);
+				console.log("Server say ", LDEngine.sidebar.accountStatus);
 
 				// Render the appropriate UI depending if you have the data
 				if (LDEngine.sidebar.accountStatus.status !== 'linked') {
@@ -158,10 +160,10 @@ var LDEngine = {
 			this.append();
 
 			// If your'e not logged in:
-			// todo
-			// If you're logged in, do all this:
+			// TODO: If you're logged in, do all this:
 			// Draw loading spinner
-			this.appendLoadingSpinner();
+
+			// this.appendLoadingSpinner();
 
 			// Get the last message element
 			$el = $(Gmail.selectors.message.container).last();
@@ -187,11 +189,16 @@ var LDEngine = {
 						});
 					});
 
+					// dont show the ajax spinner anymore
+					LDEngine.sidebar.stopLoadingSpinner();
+
 					// Render the message snippets returned from the server
 					LDEngine.sidebar.renderSnippets(messageSnippets);
 
 				});
 			});
+
+			
 
 			// Listen for clicks on all messages
 			Gmail.message.bindClick();
@@ -200,6 +207,9 @@ var LDEngine = {
 		// Append sidebar to appropriate place in DOM
 		append: function() {
 			console.log("Appending sidebar...");
+
+			
+
 
 			// Kill the container if it exists
 			if($('#ldengine').length) {
@@ -231,9 +241,18 @@ var LDEngine = {
 
 		},
 
-		// TODO: append loading spinner tp sidebar
+		// Append loading spinner to sidebar, right now the process of checking login
+		// is taking the longest in the beginning.
 		appendLoadingSpinner: function() {
+			$('.adC').append('<div class="lde-ajax-spinner"></div>');
+			$('.lde-ajax-spinner').show();
+		},
 
+		// stop the loading spinner from being displayed,
+		// We have this in its own method so it can be called anywhere we need it and dont
+		// need to check conditions in appendLoadingSpinner.
+		stopLoadingSpinner: function() {
+			$('.lde-ajax-spinner').hide();
 		},
 
 		renderSnippets: function(messageSnippets) {
