@@ -122,8 +122,8 @@
 
 #lde-popup {
 	box-shadow: 0 0 7px #888;
-	width: 470px;
-	height: 270px;
+	width: 600px;
+	height: 350px;
 	padding: 25px;
 	border: solid 1px #999;
 	color: #666;
@@ -132,7 +132,7 @@
 	z-index: 1001;
 
 	right:300px;
-	top: 0;
+	top: 100px;
 }
 
 .lde-popup-subject {

@@ -316,8 +316,11 @@ var LDEngine = {
 		// Display the popup
 		display: function() {
 
-			// TODO: draw the veil
+			// Draw the veil.
+			LDEngine.popup.maskMessageArea(true);
+			
 			// Render the popup content
+
 			if(!LDEngine.popup.model) {
 				// Attach the popup container if necessary
 				if(! $('#lde-popup').length) {
@@ -351,8 +354,23 @@ var LDEngine = {
 
 			$('#lde-popup').detach();
 
-			// TODO: Kill the mask
-			// maskMessageArea(false);
+			// Kill the mask.
+			LDEngine.popup.maskMessageArea(false);
+			
+		},
+
+		maskMessageArea: function(mask) {
+
+			$('#lde-msg-mask').detach();
+			// If we just want to remove the mask, we're done
+			if(mask === false) {
+				return;
+			}
+			// Otherwise, create a mask and place it over the message area
+			else {
+				var maskEl = $('<div id="lde-msg-mask"></div>').click(LDEngine.popup.close);
+				$('.Bu').first().css('position', 'relative').append(maskEl);
+			}
 		}
 	}
 };
