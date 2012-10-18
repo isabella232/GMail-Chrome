@@ -180,11 +180,9 @@ var LDEngine = {
 					// Marshal data from server
 					console.log("Data from server: ", messageSnippets);
 
-					messageSnippets = [];
-
-					// If no snippets are returned, render the noSnippets view and stop the ajax spinner
+					// If no snippets are returned, render the noSnippets view and stop the ajax spinner.
 					if (messageSnippets.length === 0) {
-							$.link.noSnippetsTemplate('.lde-progress-bar');
+							$.link.noSnippetsTemplate('.lde-noSnippets');
 							LDEngine.sidebar.stopLoadingSpinner();
 							return;
 					}
@@ -193,7 +191,7 @@ var LDEngine = {
 						return _.extend(messageSnippet, {
 							date: messageSnippet.date && new Date(messageSnippet.date).toString('MMM d'),
 							from: _.extend(messageSnippet.from, {
-								name: !messageSnippet.from.name && messageSnippet.from.email
+								name: !messageSnippet.from.name && messageSnippet.from.name
 							})
 						});
 					});
@@ -295,30 +293,12 @@ var LDEngine = {
 				// Place the progress bar
 				$('.lde-progress-bar').html('');
 
-				// Keep updating display until percent indexed reaches 100% or goes
-				// back to 0.
-				// while (percentIndexed !== 0 || percentIndexed !== 100) {
-
-				// 	// updates UI based on new percentIndex every loop
-				// 	$.link.progressbarTemplate('.lde-progress-bar');
-				// 	$('.lde-progress-status').css({
-				// 		width: percentIndexed + '%'
-				// 	});
-				// 	$('.lde-progress-value').html(percentIndexed + '%');
-				// 	percentIndexed = LDEngine.sidebar.progressBar.checkProgress();
-				// }
-
-				// hide progress bar when it completes the indexing of the inbox
-				LDEngine.sidebar.progressBar.hide();
-			},
-
-			// Check the percent index of the account status and return that value.
-			checkProgress: function() {
-
-				$.get(API_URL + "/account/status").done(function(data) {
-					var percentIndexed = data.percentIndexed;
-					return percentIndexed;
+				// updates UI based on new percentIndex every loop
+				$.link.progressbarTemplate('.lde-progress-bar');
+				$('.lde-progress-status').css({
+					width: percentIndexed + '%'
 				});
+				$('.lde-progress-value').html(percentIndexed + '%');
 			},
 
 			hide: function() {
@@ -461,15 +441,20 @@ $(function() {
 	$.when(getSettings()).then(function() {
 		$.when($.get(chrome.extension.getURL("ldengine.tmpl"), function(data) {
 			$.templates('ldengineTemplate', data);
-		}, 'html'), $.get(chrome.extension.getURL("snippet.tmpl"), function(data) {
+		}, 'html'),
+		$.get(chrome.extension.getURL("snippet.tmpl"), function(data) {
 			$.templates('sidebarTemplate', data);
-		}, 'html'), $.get(chrome.extension.getURL("popup.tmpl"), function(data) {
+		}, 'html'),
+		$.get(chrome.extension.getURL("popup.tmpl"), function(data) {
 			$.templates('popupTemplate', data);
-		}, 'html'), $.get(chrome.extension.getURL("unauthenticated.tmpl"), function(data) {
+		}, 'html'),
+		$.get(chrome.extension.getURL("unauthenticated.tmpl"), function(data) {
 			$.templates('unauthTemplate', data);
-		}, 'html'), $.get(chrome.extension.getURL("progressbar.tmpl"), function(data) {
+		}, 'html'),
+		$.get(chrome.extension.getURL("progressbar.tmpl"), function(data) {
 			$.templates('progressbarTemplate', data);
-		}, 'html'), $.get(chrome.extension.getURL("noSnippets.tmpl"), function(data) {
+		}, 'html'),
+		$.get(chrome.extension.getURL("noSnippets.tmpl"), function(data) {
 			$.templates('noSnippetsTemplate', data);
 		}, 'html')).then(function() {
 			// Set global state that UI templates are ready
