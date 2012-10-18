@@ -330,6 +330,10 @@ var LDEngine = {
 			LDEngine.popup.xhr = $.get(API_URL + '/message', {
 				id: id
 			}, function(model) {
+
+				// will extend model to have its date property become a formated date
+				_.extend(model, {date: model.date && new Date(model.date).toString('MMM d')});
+
 				LDEngine.popup.model = model;
 				LDEngine.popup.display();
 			});
