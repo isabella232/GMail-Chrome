@@ -100,7 +100,7 @@ var Gmail = {
 			// $('.kv,.hn,.h7').bind('click', clickMessageThread);
 		},
 
-		// TODO: POST the message object to the server
+		// POST the message object to the server
 		post: function(messageApiObj, callback) {
 			console.log("* POST the messageApiObj", messageApiObj);
 
@@ -176,9 +176,18 @@ var LDEngine = {
 
 				// Send the scrapped message to the server
 				Gmail.message.post(messageApiObj, function(messageSnippets, textStatus) { // afterwards
-					// TODO: remove the loading spinner
+
 					// Marshal data from server
 					console.log("Data from server: ", messageSnippets);
+
+					messageSnippets = [];
+
+					// If no snippets are returned, render the noSnippets view and stop the ajax spinner
+					if (messageSnippets.length === 0) {
+							$.link.noSnippetsTemplate('.lde-progress-bar');
+							LDEngine.sidebar.stopLoadingSpinner();
+							return;
+					}
 
 					_.map(messageSnippets, function(messageSnippet) {
 						return _.extend(messageSnippet, {
@@ -271,7 +280,8 @@ var LDEngine = {
 
 		progressBar: {
 
-			// Renders the progress bar in to the sidebar.
+			// Renders the progress bar in to the sidebar and keeps it updated until the
+			// entire inbox has been indexed.
 			render: function() {
 
 				var percentIndexed = LDEngine.sidebar.accountStatus.percentIndexed;
@@ -287,16 +297,16 @@ var LDEngine = {
 
 				// Keep updating display until percent indexed reaches 100% or goes
 				// back to 0.
-				while (percentIndexed === 0 || percentIndexed === 100) {
+				// while (percentIndexed !== 0 || percentIndexed !== 100) {
 
-					// updates UI based on new percentIndex every loop
-					$.link.progressbarTemplate('.lde-progress-bar');
-					$('.lde-progress-status').css({
-						width: percentIndexed + '%'
-					});
-					$('.lde-progress-value').html(percentIndexed + '%');
-					percentIndexed = LDEngine.sidebar.progressBar.checkProgress();
-				}
+				// 	// updates UI based on new percentIndex every loop
+				// 	$.link.progressbarTemplate('.lde-progress-bar');
+				// 	$('.lde-progress-status').css({
+				// 		width: percentIndexed + '%'
+				// 	});
+				// 	$('.lde-progress-value').html(percentIndexed + '%');
+				// 	percentIndexed = LDEngine.sidebar.progressBar.checkProgress();
+				// }
 
 				// hide progress bar when it completes the indexing of the inbox
 				LDEngine.sidebar.progressBar.hide();
@@ -459,6 +469,8 @@ $(function() {
 			$.templates('unauthTemplate', data);
 		}, 'html'), $.get(chrome.extension.getURL("progressbar.tmpl"), function(data) {
 			$.templates('progressbarTemplate', data);
+		}, 'html'), $.get(chrome.extension.getURL("noSnippets.tmpl"), function(data) {
+			$.templates('noSnippetsTemplate', data);
 		}, 'html')).then(function() {
 			// Set global state that UI templates are ready
 			templatesReady = true;
