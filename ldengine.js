@@ -135,7 +135,7 @@ var LDEngine = {
 
 		init: function() {
 
-			this.appendLoadingSpinner();
+			
 			// Send request to server to see whether the user is logged in or not.
 			console.log("Checking logged in status at " + API_URL);
 			$.get(API_URL + "/account/status", function(data) {
@@ -149,6 +149,7 @@ var LDEngine = {
 					LDEngine.sidebar.append();
 					$.link.unauthTemplate($('.lde-unauthenticated'), LDEngine.sidebar.accountStatus.AuthUrl);
 				} else {
+					LDEngine.sidebar.appendLoadingSpinner();
 					LDEngine.sidebar.renderUI();
 				}
 
@@ -190,6 +191,9 @@ var LDEngine = {
 
 					// dont show the ajax spinner anymore
 					LDEngine.sidebar.stopLoadingSpinner();
+
+					// render the progressbar
+					LDEngine.sidebar.progressBar.render();
 
 					// Render the message snippets returned from the server
 					LDEngine.sidebar.renderSnippets(messageSnippets);
@@ -265,6 +269,49 @@ var LDEngine = {
 
 		progressBar: {
 
+			// Renders the progress bar in to the sidebar.
+			render: function() {
+
+				var percentIndexed = LDEngine.sidebar.accountStatus.percentIndexed;
+
+				// Dont even render if we already have everything indexed
+				if (percentIndexed === 100) {
+					LDEngine.sidebar.progressBar.hide();
+					return;
+				}
+
+				// Place the progress bar
+				$('.lde-progress-bar').html('');
+
+				// Keep updating display until percent indexed reaches 100% or goes
+				// back to 0.
+				while (percentIndexed === 0 || percentIndexed === 100) {
+
+					// updates UI based on new percentIndex every loop
+					$.link.progressbarTemplate('.lde-progress-bar');
+					$('.lde-progress-status').css({
+						width: percentIndexed + '%'
+					});
+					$('.lde-progress-value').html(percentIndexed + '%');
+					percentIndexed = LDEngine.sidebar.progressBar.checkProgress();
+				}
+
+				// hide progress bar when it completes the indexing of the inbox
+				LDEngine.sidebar.progressBar.hide();
+			},
+
+			// Check the percent index of the account status and return that value.
+			checkProgress: function() {
+
+				$.get(API_URL + "/account/status").done(function(data) {
+					var percentIndexed = data.percentIndexed;
+					return percentIndexed;
+				});
+			},
+
+			hide: function() {
+				$('.lde-progress-bar').fadeOut(2500, 'linear');
+			}
 		}
 
 	},
@@ -807,16 +854,3 @@ $(function() {
 // // 		$('.adC').prepend(block);
 // // 	}
 // // }
-
-// function maskMessageArea(mask) {
-// 	$('#lde-msg-mask').detach();
-// 	// If we just want to remove the mask, we're done
-// 	if(mask === false) {
-// 		return;
-// 	}
-// 	// Otherwise, create a mask and place it over the message area
-// 	else {
-// 		var maskEl = $('<div id="lde-msg-mask"></div>').click(removePopup);
-// 		$('.Bu').first().css('position', 'relative').append(maskEl);
-// 	}
-// }
