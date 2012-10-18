@@ -231,6 +231,8 @@ var LDEngine = {
 		// Append loading spinner to sidebar, right now the process of checking login
 		// is taking the longest in the beginning.
 		appendLoadingSpinner: function() {
+
+
 			$('.adC').append('<div class="lde-ajax-spinner"></div>');
 			$('.lde-ajax-spinner').show();
 		},
@@ -362,7 +364,6 @@ var LDEngine = {
 				$.link.popupTemplate($('#lde-popup'), {
 					from: {}
 				});
-				$('.lde-ajax-spinner').show();
 				$('.lde-popup-content').hide();
 
 			} else {
