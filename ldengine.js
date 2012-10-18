@@ -142,6 +142,7 @@ var LDEngine = {
 				LDEngine.sidebar.accountStatus = data;
 				
 				console.log("Server say ", LDEngine.sidebar.accountStatus);
+				console.log(LDEngine.sidebar.accountStatus);
 
 				// Render the appropriate UI depending if you have the data
 				if (LDEngine.sidebar.accountStatus.status !== 'linked') {
@@ -162,8 +163,6 @@ var LDEngine = {
 			// If your'e not logged in:
 			// TODO: If you're logged in, do all this:
 			// Draw loading spinner
-
-			// this.appendLoadingSpinner();
 
 			// Get the last message element
 			$el = $(Gmail.selectors.message.container).last();
@@ -218,25 +217,9 @@ var LDEngine = {
 			}
 			// Create the container
 			var block = $('<div id="ldengine"></div>');
-
-			// Place it on the page
-			// Do some adjustments on the ad bar container and the adbar
-			// $('.adC').css('right', '20px').css('marginRight', '0px').css('width', '236px');
-			// $(adBarClass).css('width', '232px');
-			// // If there's an ad bar, replace it with our stuff
-			// if($(adBarClass).length > 0) {
-			// 	$(adBarClass).empty();
-			// 	$(adBarClass).append(block);
-			// }
-			// // Otherwise, if the sidebar has contact info at the top, insert our content after it
-			// else if($('.anT').length > 0) {
-			// 	block.insertAfter($('.anT'));
-			// }
-			// // Otherwise our content at the top of the sidebar
-			// else {
 			$('.adC').prepend(block);
-			// }
-			// No data; just a cheap way to render the html template
+
+			// No data, just a cheap way to render the html template
 			$.link.ldengineTemplate('#ldengine');
 
 		},
@@ -318,7 +301,7 @@ var LDEngine = {
 
 			// Draw the veil.
 			LDEngine.popup.maskMessageArea(true);
-			
+
 			// Render the popup content
 
 			if(!LDEngine.popup.model) {
@@ -406,7 +389,8 @@ $(function() {
 	function getSettings() {
 		var getApiURLDeferredObj = $.Deferred();
 		chrome.storage.local.get('ldengine_api_url', function(items) {
-			// For now, to avoid any weird issues w/ people who already installed 
+
+			// For now, to avoid any weird issues w/ people who already installed
 			// the existing version, hard-code the production host
 			// API_URL = "apps.ldengine.com";
 			API_URL = items.ldengine_api_url || "https://apps.ldengine.com";
