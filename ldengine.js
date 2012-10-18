@@ -129,7 +129,9 @@ var LDEngine = {
 
 		// Returns whether the sidebar can be appended safely
 		isReadyToBeAppended: function() {
-			console.log("Is ready to be appended?!?!?!");
+			// console.log("Is ready to be appended?!?!?!");
+			// console.log("templatesReady",templatesReady);
+			// console.log("Gmail.selectors.sidebar",Gmail.selectors.sidebar);
 			return templatesReady && $(Gmail.selectors.sidebar).length;
 		},
 
@@ -191,7 +193,7 @@ var LDEngine = {
 						return _.extend(messageSnippet, {
 							date: messageSnippet.date && new Date(messageSnippet.date).toString('MMM d'),
 							from: _.extend(messageSnippet.from, {
-								name: !messageSnippet.from.name && messageSnippet.from.name
+								name: messageSnippet.from.name
 							})
 						});
 					});
@@ -264,6 +266,11 @@ var LDEngine = {
 				var messageSnippet = $($('.lde-email-result')[i]);
 				messageSnippet.attr('data-id', messageSnippets[i].id);
 				messageSnippet.click(LDEngine.sidebar.clickSnippet);
+
+				
+				// Replace \n's with <br>'s
+				var snippetContentEl = messageSnippet.find(".lde-text");
+				snippetContentEl.html(snippetContentEl.html().replace(/(\n)/g,"<br>"));
 			}
 		},
 
