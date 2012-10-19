@@ -106,7 +106,7 @@ var Gmail = {
 		adbar: '.u5',
 		userbar: '.nH:not(".adC")',
 		message: {
-			body: '.adP',
+			body     : '.adP',
 			container: '.h7'
 		}
 	},
@@ -230,7 +230,7 @@ var LDEngine = {
 
 			// Get the last message element
 			$el = $(Gmail.selectors.message.container).last();
-			console.log("Message to scrape:", $el, "body:", $el.find(Gmail.selectors.message.body));
+			// console.log("name div", $el.find('gD'), "email div", $el.find('go'));
 
 			// Scrape the message from the Gmail UI
 			Gmail.message.scrape($el, function(err, messageApiObj) {
@@ -379,7 +379,16 @@ var LDEngine = {
 
 			// Render the sender info.
 			render: function() {
-				$.link.senderInfoTemplate('.lde-senderInfo');
+
+				var senderInfo = {
+					user: {
+						name: LDEngine.sidebar.accountStatus && LDEngine.sidebar.accountStatus.user && LDEngine.sidebar.accountStatus.user.name,
+						email: LDEngine.sidebar.accountStatus && LDEngine.sidebar.accountStatus.user && LDEngine.sidebar.accountStatus.user.email
+					}
+				};
+
+				console.log("this is sender into for sender info ender", senderInfo);
+				$.link.senderInfoTemplate('.lde-senderInfo', senderInfo);
 			}
 		}
 
