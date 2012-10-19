@@ -26,6 +26,9 @@
 	border-bottom: 1px solid #D8D8D8;
 	overflow: hidden;
 }
+.lde-email-result:hover {
+	background: #F4F8E7;
+}
 
 .active-snippet {
 	background-color: #f4f8e7;
@@ -121,6 +124,9 @@
 /**
  * sender info styles.
  */
+.lde-senderInfo {
+	padding: 0 8px;
+}
 .lde-senderInfo-name {
 	font: 1.2em Helvetica, Arial, "sans-serif";
 	margin-bottom: 10px;
@@ -140,6 +146,9 @@
 	background-image: url('chrome-extension://__MSG_@@extension_id__/image_anonymousLarge@2x.png');
 }
 
+/**
+ * popup styles.
+ */
 #lde-popup {
 	box-shadow: 0 0 7px #888;
 	width: 600px;
@@ -169,12 +178,14 @@
 }
 .lde-popup-sender-name {
 	font-size: 14px;
+	line-height: 14px;
 	font-weight: bold;
 	float: left;
 	margin-right: 10px;
 }
 
 .lde-popup-sender-email {
+	line-height: 14px;
 	font-size: 12px;
 	float: left;
 }
@@ -182,6 +193,7 @@
 .lde-popup-date {
 	font-size: 12px;
 	float: right;
+	line-height: 14px;
 }
 
 .lde-popup-msg-text {
@@ -244,8 +256,8 @@ position: absolute;
 	height: 20px;
 	background-image:url('chrome-extension://__MSG_@@extension_id__/icon_close.gif');	
 	position: absolute;
-	top: 0px;
-	right: 0px;
+	top: 24px;
+	right: 25px;
 	cursor: pointer;
 }
 
