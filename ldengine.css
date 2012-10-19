@@ -198,7 +198,8 @@
 
 .lde-popup-msg-text {
 	line-height: 180%;
-	padding-left: 7%;
+	padding-right: 2%;
+	/*padding-left: 7%;*/
 	font-size: 12px;
 	height: 200px;
 	overflow: auto;
@@ -264,9 +265,10 @@ position: absolute;
 }
 
 .lde-popup-close-button {
-	width: 23px;
+	width: 22px;
 	height: 20px;
 	background-image:url('chrome-extension://__MSG_@@extension_id__/icon_close.gif');	
+	background-position: -1px 0;
 	position: absolute;
 	top: 24px;
 	right: 25px;
