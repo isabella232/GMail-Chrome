@@ -104,6 +104,7 @@ var Gmail = {
 	selectors: {
 		sidebar: '.y3',
 		adbar: '.u5',
+		userbar: '.nH:not(".adC")',
 		message: {
 			body: '.adP',
 			container: '.h7'
@@ -300,8 +301,6 @@ var LDEngine = {
 		// Append loading spinner to sidebar, right now the process of checking login
 		// is taking the longest in the beginning.
 		appendLoadingSpinner: function() {
-
-
 			$('.adC').append('<div class="lde-ajax-spinner"></div>');
 			$('.lde-ajax-spinner').show();
 		},
@@ -314,6 +313,9 @@ var LDEngine = {
 		},
 
 		renderSnippets: function(messageSnippets) {
+
+			// Remove any Gmail stuff that's popped up
+			$(Gmail.selectors.sidebar).find(Gmail.selectors.userbar).remove();
 
 			// Add the related emails to the sidebar
 			$.link.sidebarTemplate(".lde-related-emails", messageSnippets);
