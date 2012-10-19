@@ -48,6 +48,9 @@ $(function() {
 		$.get(chrome.extension.getURL("unauthenticated.tmpl"), function(data) {
 			$.templates('unauthTemplate', data);
 		}, 'html'),
+		$.get(chrome.extension.getURL("senderInfo.tmpl"), function(data) {
+			$.templates('senderInfoTemplate', data);
+		}, 'html'),
 		$.get(chrome.extension.getURL("progressbar.tmpl"), function(data) {
 			$.templates('progressbarTemplate', data);
 		}, 'html'),
@@ -478,47 +481,6 @@ var LDEngine = {
 
 // Bind objects so we can use *this*
 _.bindAll(LDEngine.sidebar);
-
-
-
-
-			// For now, to avoid any weird issues w/ people who already installed
-			// the existing version, hard-code the production host
-			// API_URL = "apps.ldengine.com";
-			API_URL = items.ldengine_api_url || "https://apps.ldengine.com";
-			getApiURLDeferredObj.resolve();
-		});
-		return getApiURLDeferredObj.promise();
-	}
-
-	// Load the settings and all of the html templates.
-	$.when(getSettings()).then(function() {
-		$.when($.get(chrome.extension.getURL("ldengine.tmpl"), function(data) {
-			$.templates('ldengineTemplate', data);
-		}, 'html'),
-		$.get(chrome.extension.getURL("snippet.tmpl"), function(data) {
-			$.templates('sidebarTemplate', data);
-		}, 'html'),
-		$.get(chrome.extension.getURL("popup.tmpl"), function(data) {
-			$.templates('popupTemplate', data);
-		}, 'html'),
-		$.get(chrome.extension.getURL("unauthenticated.tmpl"), function(data) {
-			$.templates('unauthTemplate', data);
-		}, 'html'),
-		$.get(chrome.extension.getURL("senderInfo.tmpl"), function(data) {
-			$.templates('senderInfoTemplate', data);
-		}, 'html'),
-		$.get(chrome.extension.getURL("progressbar.tmpl"), function(data) {
-			$.templates('progressbarTemplate', data);
-		}, 'html'),
-		$.get(chrome.extension.getURL("noSnippets.tmpl"), function(data) {
-			$.templates('noSnippetsTemplate', data);
-		}, 'html')).then(function() {
-			// Set global state that UI templates are ready
-			templatesReady = true;
-		});
-	});
-});
 
 	///////
 	//////////
