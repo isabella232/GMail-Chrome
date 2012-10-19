@@ -1,9 +1,68 @@
+// Bootstrap
+$(function() {
+
+	var checkForSidebarTimer = null;
+	var checkForAdsTimer = null;
+	var checkMessageLoadedTimer = null;
+	var checkSidebarRetry;
+
+	// When sidebar can we safely appended, immediately append it (spam until it's possible, then do it)
+	throttledWaitUntil(LDEngine.sidebar.isReadyToBeAppended, LDEngine.sidebar.init, 25);
+
+	// Start monitoring changes to browser history
+	$(window).bind("popstate", function(event) {
+		// On popstate, try to initialize the sidebar again
+		if(window.location.hash.match(/#inbox\/\S+/)) {
+			throttledWaitUntil(LDEngine.sidebar.isReadyToBeAppended, LDEngine.sidebar.init, 25);
+		}
+	});
+
+	// Create a deferred object to wrap around a call to Chrome's
+	// local storage API.  This lets us chain our request for
+	// settings with our other startup requests
+
+	function getSettings() {
+		var getApiURLDeferredObj = $.Deferred();
+		chrome.storage.local.get('ldengine_api_url', function(items) {
+
+			// For now, to avoid any weird issues w/ people who already installed
+			// the existing version, hard-code the production host
+			// API_URL = "apps.ldengine.com";
+			API_URL = items.ldengine_api_url || "https://apps.ldengine.com";
+			getApiURLDeferredObj.resolve();
+		});
+		return getApiURLDeferredObj.promise();
+	}
+
+	// Load the settings and all of the html templates.
+	$.when(getSettings()).then(function() {
+		$.when($.get(chrome.extension.getURL("ldengine.tmpl"), function(data) {
+			$.templates('ldengineTemplate', data);
+		}, 'html'),
+		$.get(chrome.extension.getURL("snippet.tmpl"), function(data) {
+			$.templates('sidebarTemplate', data);
+		}, 'html'),
+		$.get(chrome.extension.getURL("popup.tmpl"), function(data) {
+			$.templates('popupTemplate', data);
+		}, 'html'),
+		$.get(chrome.extension.getURL("unauthenticated.tmpl"), function(data) {
+			$.templates('unauthTemplate', data);
+		}, 'html'),
+		$.get(chrome.extension.getURL("progressbar.tmpl"), function(data) {
+			$.templates('progressbarTemplate', data);
+		}, 'html'),
+		$.get(chrome.extension.getURL("noSnippets.tmpl"), function(data) {
+			$.templates('noSnippetsTemplate', data);
+		}, 'html')).then(function() {
+			// Set global state that UI templates are ready
+			templatesReady = true;
+		});
+	});
+});
+
 var API_URL;
 var activeMessage = null;
 var accountStatus;
-
-
-
 var templatesReady = false;
 
 // Shared alarm object for message scrape-readiness
@@ -34,7 +93,6 @@ function waitUntil(test, action, tryInterval, sharedTimer, eachTime) {
 
 // A version of waitUntil that won't fire more than once every five seconds
 var throttledWaitUntil = _.throttle(waitUntil, 5000);
-
 
 
 
@@ -423,32 +481,6 @@ _.bindAll(LDEngine.sidebar);
 
 
 
-// Bootstrap
-$(function() {
-
-	var checkForSidebarTimer = null;
-	var checkForAdsTimer = null;
-	var checkMessageLoadedTimer = null;
-	var checkSidebarRetry;
-
-	// When sidebar can we safely appended, immediately append it (spam until it's possible, then do it)
-	throttledWaitUntil(LDEngine.sidebar.isReadyToBeAppended, LDEngine.sidebar.init, 25);
-
-	// Start monitoring changes to browser history
-	$(window).bind("popstate", function(event) {
-		// On popstate, try to initialize the sidebar again
-		if(window.location.hash.match(/#inbox\/\S+/)) {
-			throttledWaitUntil(LDEngine.sidebar.isReadyToBeAppended, LDEngine.sidebar.init, 25);
-		}
-	});
-
-	// Create a deferred object to wrap around a call to Chrome's
-	// local storage API.  This lets us chain our request for
-	// settings with our other startup requests
-
-	function getSettings() {
-		var getApiURLDeferredObj = $.Deferred();
-		chrome.storage.local.get('ldengine_api_url', function(items) {
 
 			// For now, to avoid any weird issues w/ people who already installed
 			// the existing version, hard-code the production host
@@ -487,6 +519,7 @@ $(function() {
 		});
 	});
 });
+
 	///////
 	//////////
 	////////
