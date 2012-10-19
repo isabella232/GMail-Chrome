@@ -13,7 +13,7 @@ $(function() {
 	$(window).bind("popstate", function(event) {
 		// On popstate, try to initialize the sidebar again
 		if(window.location.hash.match(/#inbox\/\S+/)) {
-			throttledWaitUntil(LDEngine.sidebar.isReadyToBeAppended, LDEngine.sidebar.init, 25);
+			waitUntil(LDEngine.sidebar.isReadyToBeAppended, LDEngine.sidebar.init, 25);
 		}
 	});
 
@@ -195,7 +195,6 @@ var LDEngine = {
 
 		init: function() {
 
-			
 			// Send request to server to see whether the user is logged in or not.
 			console.log("Checking logged in status at " + API_URL);
 			$.get(API_URL + "/account/status", function(data) {
@@ -277,9 +276,6 @@ var LDEngine = {
 		// Append sidebar to appropriate place in DOM
 		append: function() {
 			console.log("Appending sidebar...");
-
-			
-
 
 			// Kill the container if it exists
 			if($('#ldengine').length) {
