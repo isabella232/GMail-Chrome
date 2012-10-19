@@ -151,7 +151,7 @@
 	background:white;
 	z-index: 1001;
 
-	right:300px;
+	right:285px;
 	top: 100px;
 }
 
@@ -209,13 +209,25 @@
 
 #lde-msg-mask {
 	background:#999;
-	width:99.1%;
+	width:97.1%;
 	height:100%;
 	opacity:.3;
 	position:absolute;
 	top:0px;
 	left:0px;
 	z-index:1000	
+}
+
+@media all and (max-width: 1200px) {
+	#lde-popup {
+		right:265px;
+	}
+}
+
+@media all and (max-width: 920px) {
+	#lde-popup {
+		left:1%;
+	}
 }
 
 .lde-popup-arrow {
