@@ -118,8 +118,27 @@
 	border-radius: 3px;
 }
 
-
-
+/**
+ * sender info styles.
+ */
+.lde-senderInfo-name {
+	font: 1.2em Helvetica, Arial, "sans-serif";
+	margin-bottom: 10px;
+}
+.lde-senderInfo-email {
+	font: .8em Helvetica, Arial, "sans-serif";
+	font-weight: lighter;
+	margin-bottom: 10px;
+}
+.lde-senderInfo-image {
+	width: 95px;
+	height: 95px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	display: block;
+	background-size: 100%;
+	background-image: url('chrome-extension://__MSG_@@extension_id__/image_anonymousLarge@2x.png');
+}
 
 #lde-popup {
 	box-shadow: 0 0 7px #888;

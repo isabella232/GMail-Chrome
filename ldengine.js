@@ -201,6 +201,9 @@ var LDEngine = {
 					// dont show the ajax spinner anymore
 					LDEngine.sidebar.stopLoadingSpinner();
 
+					// render the sender info
+					LDEngine.sidebar.senderInfo.render();
+
 					// render the progressbar
 					LDEngine.sidebar.progressBar.render();
 
@@ -310,6 +313,14 @@ var LDEngine = {
 
 			hide: function() {
 				$('.lde-progress-bar').fadeOut(2500, 'linear');
+			}
+		},
+
+		senderInfo: {
+
+			// Render the sender info.
+			render: function() {
+				$.link.senderInfoTemplate('.lde-senderInfo');
 			}
 		}
 
@@ -461,6 +472,9 @@ $(function() {
 		}, 'html'),
 		$.get(chrome.extension.getURL("unauthenticated.tmpl"), function(data) {
 			$.templates('unauthTemplate', data);
+		}, 'html'),
+		$.get(chrome.extension.getURL("senderInfo.tmpl"), function(data) {
+			$.templates('senderInfoTemplate', data);
 		}, 'html'),
 		$.get(chrome.extension.getURL("progressbar.tmpl"), function(data) {
 			$.templates('progressbarTemplate', data);
