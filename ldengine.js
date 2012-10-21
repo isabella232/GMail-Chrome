@@ -115,6 +115,7 @@ var Gmail = {
 
 		// Scrape the message data from the DOM
 		scrape: function($el, callback) {
+
 			console.log("Starting scrape process...");
 			var thisMessageIsReadyToScrape = _.bind(Gmail.message.isReadyToScrape, this, $el);
 
@@ -199,9 +200,15 @@ var LDEngine = {
 
 		init: function() {
 
+			// Scrape email address to send to server to verify identity
+			var emailString = $(".msg").text();
+			emailString = emailString.match(/Loading (.+)…/i)[1];
+
 			// Send request to server to see whether the user is logged in or not.
 			console.log("Checking logged in status at " + API_URL);
-			$.get(API_URL + "/account/status", function(data) {
+			$.get(API_URL + "/account/status", {
+				email: emailString
+			},function(data) {
 				LDEngine.sidebar.accountStatus = data;
 				
 				console.log("Server say ", LDEngine.sidebar.accountStatus);
