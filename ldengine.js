@@ -192,9 +192,6 @@ var LDEngine = {
 
 		// Returns whether the sidebar can be appended safely
 		isReadyToBeAppended: function() {
-			// console.log("Is ready to be appended?!?!?!");
-			// console.log("templatesReady",templatesReady);
-			// console.log("Gmail.selectors.sidebar",Gmail.selectors.sidebar);
 			return templatesReady && $(Gmail.selectors.sidebar).length;
 		},
 
@@ -203,6 +200,7 @@ var LDEngine = {
 			// Scrape email address to send to server to verify identity
 			var emailString = $(".msg").text();
 			emailString = emailString.match(/Loading (.+)…/i)[1];
+			LDEngine.sidebar.appendLoadingSpinner();
 
 			// Send request to server to see whether the user is logged in or not.
 			console.log("Checking logged in status at " + API_URL);
@@ -219,7 +217,6 @@ var LDEngine = {
 					LDEngine.sidebar.append();
 					$.link.unauthTemplate($('.lde-unauthenticated'), LDEngine.sidebar.accountStatus.AuthUrl);
 				} else {
-					LDEngine.sidebar.appendLoadingSpinner();
 					LDEngine.sidebar.renderUI();
 				}
 
