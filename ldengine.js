@@ -200,6 +200,7 @@ var LDEngine = {
 			// Scrape email address to send to server to verify identity
 			var emailString = $(".msg").text();
 			emailString = emailString.match(/Loading (.+)…/i)[1];
+			$(Gmail.selectors.sidebar).find(Gmail.selectors.userbar).remove();
 			LDEngine.sidebar.appendLoadingSpinner();
 
 			// Send request to server to see whether the user is logged in or not.
@@ -208,7 +209,6 @@ var LDEngine = {
 				email: emailString
 			},function(data) {
 				LDEngine.sidebar.accountStatus = data;
-				
 				console.log("Server say ", LDEngine.sidebar.accountStatus);
 				console.log(LDEngine.sidebar.accountStatus);
 
