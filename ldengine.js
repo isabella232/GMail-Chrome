@@ -7,7 +7,7 @@ $(function() {
 	var checkSidebarRetry;
 
 	// When sidebar can we safely appended, immediately append it (spam until it's possible, then do it)
-	throttledWaitUntil(LDEngine.sidebar.isReadyToBeAppended, LDEngine.sidebar.init, 25);
+	// throttledWaitUntil(LDEngine.sidebar.isReadyToBeAppended, LDEngine.sidebar.init, 25);
 
 	// Start monitoring changes to browser history
 	$(window).bind("popstate", function(event) {
