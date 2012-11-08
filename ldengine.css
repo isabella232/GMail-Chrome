@@ -75,6 +75,17 @@
 }
 
 /**
+ * no message snippets styles
+ */
+.lde-noSnippets-message {
+	color: #777;
+	margin: 250px auto 0;
+	font-size: 1.1em;
+	text-align: center;
+	width: 175px;
+}
+
+/**
  * unauthenticated styles.
  */
 .lde-unauthenticated span {
@@ -217,7 +228,6 @@
 	position: relative;
 	overflow: hidden;
 	margin-top: 0;
-	padding-top: 10px;
 }
 
 #lde-msg-mask {
@@ -254,9 +264,9 @@
 }
 
 .lde-ajax-spinner {
-position: absolute;
+	position: absolute;
 	top: 300px;
-	left: 50%;
+	left: 100px;
 	width: 32px;
 	height: 32px;
 	margin-top: -16px; /* Half the height */

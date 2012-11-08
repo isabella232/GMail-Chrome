@@ -7,7 +7,7 @@ $(function() {
 	var checkSidebarRetry;
 
 	// When sidebar can we safely appended, immediately append it (spam until it's possible, then do it)
-	// throttledWaitUntil(LDEngine.sidebar.isReadyToBeAppended, LDEngine.sidebar.init, 25);
+	throttledWaitUntil(LDEngine.sidebar.isReadyToBeAppended, LDEngine.sidebar.init, 25);
 
 	// Start monitoring changes to browser history
 	$(window).bind("popstate", function(event) {
@@ -305,7 +305,10 @@ var LDEngine = {
 		// Append loading spinner to sidebar, right now the process of checking login
 		// is taking the longest in the beginning.
 		appendLoadingSpinner: function() {
-			$('.adC').append('<div class="lde-ajax-spinner"></div>');
+			$('td.Bu.y3').css({
+				'position': 'relative'
+			});
+			$('.Bu.y3').append('<div class="lde-ajax-spinner"></div>');
 			$('.lde-ajax-spinner').show();
 		},
 
@@ -313,6 +316,9 @@ var LDEngine = {
 		// We have this in its own method so it can be called anywhere we need it and dont
 		// need to check conditions in appendLoadingSpinner.
 		stopLoadingSpinner: function() {
+			$('td.Bu.y3').css({
+				'position': 'static'
+			});
 			$('.lde-ajax-spinner').hide();
 		},
 
