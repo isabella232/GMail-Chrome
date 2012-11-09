@@ -223,10 +223,19 @@ var LDEngine = {
 			});
 		},
 
+		setSidebarHeight: function(selector) {
+			var sidebarHeight = $(window).height() - $('.nH.w-asV.aiw').outerHeight(true) - $('.aeH').height() - $('Bs.nH.iY').height();
+
+			$(selector).height(sidebarHeight);
+			console.log(sidebarHeight);
+		},
+
 		renderUI: function() {
 
 			// Draw empty sidebar
 			this.append();
+
+			LDEngine.sidebar.setSidebarHeight('#ldengine');
 
 			// If your'e not logged in:
 			// TODO: If you're logged in, do all this:
