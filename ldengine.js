@@ -275,6 +275,12 @@ var LDEngine = {
 					// Render the message snippets returned from the server
 					LDEngine.sidebar.renderSnippets(messageSnippets);
 
+					// fixed to prevent Google from capturing out scroll event
+					$('.lde-related-emails').bind('mousewheel', function(e, delta) {
+						e.stopPropagation();
+						e.stopImmediatePropagation();
+					});
+
 				});
 			});
 
