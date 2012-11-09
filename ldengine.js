@@ -51,6 +51,9 @@ $(function() {
 		$.get(chrome.extension.getURL("senderInfo.tmpl"), function(data) {
 			$.templates('senderInfoTemplate', data);
 		}, 'html'),
+		// $.get(chrome.extension.getURL("noResonse.tmpl"), function(data) {
+		// 	$.templates('noResonseTemplate', data);
+		// }, 'html'),
 		$.get(chrome.extension.getURL("progressbar.tmpl"), function(data) {
 			$.templates('progressbarTemplate', data);
 		}, 'html'),
@@ -205,9 +208,20 @@ var LDEngine = {
 
 			// Send request to server to see whether the user is logged in or not.
 			console.log("Checking logged in status at " + API_URL);
+
+			// start timer that will fire if we do not get response back in time when checking the
+			// account status.
+			var noResponse = setTimeout(function() {
+					LDEngine.sidebar.stopLoadingSpinner();
+					LDEngine.sidebar.appendNoResponse();
+				}, 10000);
+
 			$.get(API_URL + "/account/status", {
 				email: emailString
 			},function(data) {
+
+				clearTimeout(noResponse);
+				console.log('this came back with data');
 				LDEngine.sidebar.accountStatus = data;
 				console.log("Server say ", LDEngine.sidebar.accountStatus);
 				console.log(LDEngine.sidebar.accountStatus);
@@ -223,8 +237,11 @@ var LDEngine = {
 			});
 		},
 
+		// set the height dynamically of the sidebar with JS. CSS will be used for the container with
+		// overflow hidden for scrolling purposes
 		setSidebarHeight: function(selector) {
-			var sidebarHeight = $(window).height() - $('.nH.w-asV.aiw').outerHeight(true) - $('.aeH').height() - $('Bs.nH.iY').height();
+			var sidebarHeight = $(window).height() - $('.nH.w-asV.aiw').outerHeight(true) -
+													$('.aeH').height() - $('Bs.nH.iY').height();
 
 			$(selector).height(sidebarHeight);
 			console.log(sidebarHeight);
@@ -331,10 +348,11 @@ var LDEngine = {
 		// We have this in its own method so it can be called anywhere we need it and dont
 		// need to check conditions in appendLoadingSpinner.
 		stopLoadingSpinner: function() {
-			$('td.Bu.y3').css({
-				'position': 'static'
-			});
 			$('.lde-ajax-spinner').hide();
+		},
+
+		appendNoResponse: function() {
+			$('.Bu.y3').append('<div class="lde-no-response">Sorry, there was no response. Refresh to try again.</div>');
 		},
 
 		renderSnippets: function(messageSnippets) {

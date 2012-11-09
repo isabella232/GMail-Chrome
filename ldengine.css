@@ -140,6 +140,19 @@
 }
 
 /**
+ * no response styles
+ */
+.lde-no-response {
+	position: absolute;
+	top: 275px;
+	width: 200px;
+	margin: 0 auto;
+	color: #777;
+	font-size: 1.1em;
+	text-align: center;
+}
+
+/**
  * sender info styles.
  */
 .lde-senderInfo {
