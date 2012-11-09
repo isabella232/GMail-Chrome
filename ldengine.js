@@ -220,7 +220,9 @@ var LDEngine = {
 				email: emailString
 			},function(data) {
 
+				// if server has responded then we kill the functions waiting for the timer to end
 				clearTimeout(noResponse);
+				
 				console.log('this came back with data');
 				LDEngine.sidebar.accountStatus = data;
 				console.log("Server say ", LDEngine.sidebar.accountStatus);
