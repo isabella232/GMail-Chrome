@@ -1,3 +1,10 @@
+/*random fixed*/
+.nH.adC {
+	top: 0 !important;
+	right: 0 !important;
+}
+
+
 .lde-button {
 	display: block;
 	border-radius: 3px;
@@ -85,7 +92,7 @@
  * no message snippets styles
  */
 .lde-noSnippets-message {
-	color: #777;
+	color: #8A8A8A;
 	margin: 250px auto 0;
 	font-size: 1.1em;
 	text-align: center;
@@ -322,11 +329,10 @@
 }
 
 .lde-progress-bar {
-    padding-top: 8px;
-    padding-bottom: 8px;
-	/*border-bottom: 1px solid #D8D8D8;*/
-    padding: 10px 8px 0px;
-	border-bottom: 1px solid #D8D8D8;
+  padding-top: 8px;
+  padding-bottom: 8px;
+/*border-bottom: 1px solid #D8D8D8;*/
+  padding: 10px 8px 0px;
 }
 
 .lde-progress-row {
@@ -375,7 +381,7 @@
  *  related emails styles
  */
 .lde-related-emails {
-	height: 420px;
+	height: auto;
 	overflow: auto;
 }
 

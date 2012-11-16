@@ -53,7 +53,7 @@ $(function() {
 		}, 'html'),
 		// $.get(chrome.extension.getURL("noResonse.tmpl"), function(data) {
 		// 	$.templates('noResonseTemplate', data);
-		// }, 'html'),
+		// }, 'html'),e
 		$.get(chrome.extension.getURL("progressbar.tmpl"), function(data) {
 			$.templates('progressbarTemplate', data);
 		}, 'html'),
@@ -232,6 +232,7 @@ var LDEngine = {
 				if (LDEngine.sidebar.accountStatus.status !== 'linked') {
 					LDEngine.sidebar.append();
 					$.link.unauthTemplate($('.lde-unauthenticated'), LDEngine.sidebar.accountStatus.AuthUrl);
+					LDEngine.sidebar.stopLoadingSpinner();
 				} else {
 					LDEngine.sidebar.renderUI();
 				}
@@ -246,7 +247,6 @@ var LDEngine = {
 													$('.aeH').height() - $('Bs.nH.iY').height();
 
 			$(selector).height(sidebarHeight);
-			console.log(sidebarHeight);
 		},
 
 		renderUI: function() {
@@ -254,7 +254,8 @@ var LDEngine = {
 			// Draw empty sidebar
 			this.append();
 
-			LDEngine.sidebar.setSidebarHeight('#ldengine');
+			
+			console.log($('#ldengine').height());
 
 			// If your'e not logged in:
 			// TODO: If you're logged in, do all this:
@@ -329,6 +330,7 @@ var LDEngine = {
 			}
 			// Create the container
 			var block = $('<div id="ldengine"></div>');
+			LDEngine.sidebar.setSidebarHeight('#ldengine');
 			$('.adC').prepend(block);
 
 			// No data, just a cheap way to render the html template
