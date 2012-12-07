@@ -400,7 +400,6 @@ var LDEngine = {
 
 
 			if (!$('.lde-related-emails').length) {
-				alert(".lde-related emails DOES NOT EXIST!");
 				LDEngine.sidebar.append();
 			}
 			else {
